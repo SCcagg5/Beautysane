@@ -7,12 +7,7 @@ var fs = require('fs');
 var nodemailer = require('nodemailer')
 var path = require('path');
 var moment = require('moment');
-var firebase = require("firebase-admin"); /*firebase admin sdk*/
-var serviceAccount = require("./firebase/smartcofrance-firebase-adminsdk-fl85u-faf297b642.json");
-firebase.initializeApp({
-    credential: firebase.credential.cert(serviceAccount),
-    databaseURL: "https://smartcofrance.firebaseio.com/",
-});
+
 
 exports.sendNLMailWithUrl = function (req, res) {
     let transporter = nodemailer.createTransport({
