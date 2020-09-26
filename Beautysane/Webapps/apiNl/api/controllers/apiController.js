@@ -7,6 +7,27 @@ var fs = require('fs');
 var nodemailer = require('nodemailer')
 var path = require('path');
 var moment = require('moment');
+var  firebase = require("firebase-admin")
+const Employee = require('../models/recette.model');
+const Questions = require('../models/questions.model');
+const Miniceur = require('../models/miniceur.model');
+const Sport = require('../models/sport.model');
+const BienEtre = require('../models/bienetre.model');
+const libre = require('libreoffice-convert');
+const fetch = require("node-fetch");
+const endpoint = process.env.REACT_APP_endpoint
+
+
+
+
+const ing = require('../models/ingredient.model');
+
+
+var serviceAccount = require("./firebase/beautysane-61cf2-firebase-adminsdk-omyqd-9ee561645c.json");
+firebase.initializeApp({
+    credential: firebase.credential.cert(serviceAccount),
+    databaseURL: "https://beautysane-61cf2.firebaseio.com",
+});
 
 
 exports.sendNLMailWithUrl = function (req, res) {
@@ -431,6 +452,27 @@ exports.sendNLMailWithUrl = function (req, res) {
             fummeur="Vous êtes fumeur. L’arrêt du tabac est un point de départ vers une meilleure hygiène de vie : alimentation équilibrée, activité physique, temps pour soi,... Si vous craignez la prise de poids à l’arrêt du tabac, nous avons des solutions simples à vous proposer."
         }
 
+       let  bs={
+        imc:imc.toFixed(2),poids :poids , taille : taille , dej:dej.toFixed(2),
+            cuisine :cuisine ,
+            alimentation:alimentation,
+            legume :legume,
+            viande:viande,
+            feculent:feculent,
+            imct:imct,
+            BienEtreMotivations:BienEtreMotivations,
+            pathologies:pathologies,
+            allergie:allergie,
+            fummeur:fummeur,
+            depense_enegitique:depense_enegitique,
+            horraire_decale:horraire_decale,
+            probleme:probleme,
+
+            text :" Voici notre sélection de produits pour manger équilibré et rester en forme.",
+            grignotez :grignotez,
+            sautez_repas : sautez_repas
+        }
+
         ejs.renderFile(path.join(__dirname, '../html/helloWorld.ejs'),{imc:imc.toFixed(2),poids :poids , taille : taille , dej:dej.toFixed(2),
             cuisine :cuisine ,
             alimentation:alimentation,
@@ -568,7 +610,7 @@ exports.sendCustomMailWithUrl = function (req, res) {
 
 
     transporter.sendMail({
-        from: '"Assemblee.Space " <noreply@assemblee.fr>',
+        from: '"BeatySane.bodycheck " <noreply@assemblee.fr>',
         to: emailsReciver,
         subject: subject,
         text: msg,
@@ -592,4 +634,529 @@ exports.sendCustomMailWithUrl = function (req, res) {
     });
 
 };
+
+exports.createQuestions = function (req,res){
+
+
+
+
+const new_questions = new Questions(req.body)
+
+    if(req.body.constructor === Object && Object.keys(req.body).length === 0){
+        res.status(400).send({ error:true, message: 'Please provide all required field' });
+    }else{
+        Questions.create(new_questions, function(err, employee) {
+            if (err)
+                res.send(err);
+            res.json({error:false,message:"Employee added successfully!",data:employee});
+        });
+    }
+
+
+
+}
+exports.createMiniceur = function (req,res){
+
+
+
+
+    const new_miniceur = new Miniceur(req.body)
+
+    if(req.body.constructor === Object && Object.keys(req.body).length === 0){
+        res.status(400).send({ error:true, message: 'Please provide all required field' });
+    }else{
+        Miniceur.create(new_miniceur, function(err, employee) {
+            if (err)
+                res.send(err);
+            res.json({error:false,message:"Miniceur added successfully!",data:employee});
+        });
+    }
+
+
+
+}
+exports.createSport = function (req,res){
+
+
+
+
+    const new_sport = new Sport(req.body)
+
+    if(req.body.constructor === Object && Object.keys(req.body).length === 0){
+        res.status(400).send({ error:true, message: 'Please provide all required field' });
+    }else{
+        Sport.create(new_sport, function(err, employee) {
+            if (err)
+                res.send(err);
+            res.json({error:false,message:"Sport added successfully!",data:employee});
+        });
+    }
+
+
+
+}
+exports.createBienEtre = function (req,res){
+
+
+
+
+    const new_bienetre = new BienEtre(req.body)
+
+    if(req.body.constructor === Object && Object.keys(req.body).length === 0){
+        res.status(400).send({ error:true, message: 'Please provide all required field' });
+    }else{
+        BienEtre.create(new_bienetre, function(err, employee) {
+            if (err)
+                res.send(err);
+            res.json({error:false,message:"Bien etre added successfully!",data:employee});
+        });
+    }
+
+
+
+}
+
+exports.getRecettes = async function (req,res) {
+   getrecettes(req,res)
+
+}
+
+async function getrecettes(req,res) {
+    let ret = { "status":500,"error":null,"data":null,"length":0}
+
+    var db = firebase.database().ref('/recettes');
+    var snapshot = await db.once('value');
+    var data = snapshot.val();
+    var arrayData= Object.values(data)
+    let dataF=[]
+
+    arrayData.map((item,key)=>{
+        dataF.push(
+            {
+                id:key,
+                nom:item.nomRecette,
+                ingredient:item.Ingredients,
+
+            }
+        )
+
+    });
+    ret.status =200;
+    ret.length = data.length;
+    ret.data = dataF ;
+    res.json(ret);
+
+
+
+
+}
+
+exports.getRecettebyId = async function (req,res) {
+    getrecettebyId(req,res)
+
+}
+
+async function getrecettebyId(req,res) {
+    let ret = { "status":500,"error":null,"data":null,"length":0}
+    let id =req.params.id
+
+    var db = firebase.database().ref('/recettes');
+    var snapshot = await db.once('value');
+    var data = snapshot.val();
+    var arrayData= Object.values(data)
+    let dataF={
+        id:id,
+        nom:arrayData[id].nomRecette,
+        ingredient:arrayData[id].Ingredients,
+    }
+
+
+    ret.status =200;
+    ret.data = dataF ;
+    res.json(ret);
+
+
+
+
+}
+
+exports.findAll = async function(req, res) {
+    console.log("work")
+    Employee.findAll(function(err, employee) {
+        console.log('controller')
+        if (err)
+            res.send(err);
+        res.send(employee);
+    });
+};
+
+///////////////// recettes //////////////
+exports.createRecette = async function(req, res) {
+    const new_employee = new Employee(req.body);
+//handles null error
+    if(req.body.constructor === Object && Object.keys(req.body).length === 0){
+        res.status(400).send({ error:true, message: 'Please provide all required field' });
+    }else{
+        Employee.create(new_employee, function(err, employee) {
+            if (err)
+                res.send(err);
+            res.json({error:false,message:"Employee added successfully!",data:employee});
+        });
+    }
+};
+
+exports.findById = function(req, res) {
+    Employee.findById(req.params.id, function(err, employee) {
+        if (err)
+            res.send(err);
+        res.json(employee);
+    });
+};
+
+/////////ingredient ////////////
+exports.createIngredient = async function(req, res) {
+    const new_employee = new ing(req.body);
+//handles null error
+    if(req.body.constructor === Object && Object.keys(req.body).length === 0){
+        res.status(400).send({ error:true, message: 'Please provide all required field' });
+    }else{
+        ing.create(new_employee, function(err, employee) {
+            if (err)
+                res.send(err);
+            res.json({error:false,message:"Ingredients added successfully!",data:employee});
+        });
+    }
+};
+
+exports.getIngredients = function(req, res) {
+    ing.findById(req.params.id, function(err, ing) {
+        if (err)
+            res.send(err);
+        res.json(ing);
+    });
+};
+
+exports.getQuestionData= function (req,res) {
+    let data ={
+        data:{}
+    }
+
+  Questions.findById(req.params.id,function (err,question) {
+      if (err){
+          res.send(err);
+      }else {
+
+          if (question.length!=0) {
+
+              data.data.question = question[0]
+
+              if (question[0].objectif === "Minceur") {
+                  Miniceur.findById(question[0].id_q, function (err2, minceur) {
+                      if (err) {
+                          res.send(err);
+                      } else {
+                          data.data.objectif = minceur[0]
+                          res.json(data);
+                      }
+                  })
+              } else if (question[0].objectif === "Sport") {
+                  Sport.findById(question[0].id_q, function (err2, sport) {
+                      if (err) {
+                          res.send(err);
+                      } else {
+                          data.data.objectif = sport[0]
+                          res.json(data);
+                      }
+                  })
+              } else if (question[0].objectif === "Bien-être") {
+                  BienEtre.findById(question[0].id_q, function (err2, bienetre) {
+                      if (err) {
+                          res.send(err);
+                      } else {
+                          data.data.objectif = bienetre[0]
+                          res.json(data);
+                      }
+                  })
+              }
+          }else {
+              data.data=""
+              res.json(data)
+          }
+      }
+
+
+  })
+
+}
+async function generateContratpdf(req, res,sUid,index) {
+
+    var json = {};
+
+
+
+
+
+
+
+    var template = "../DOC/BStemplate.docx";
+    var dataDOC = await GenerateWordwithImg(template, json, 150, 50);
+
+    var code = "bodycheck";
+
+    var dataPdf = await ConvertDOcVerPdf(dataDOC, code);
+
+    //delete file
+    const path1 = 'C:\\tmp\\' + code + '.docx';
+    const path2 = 'C:\\tmp\\' + code + '.pdf';
+    try {
+        fs.unlinkSync(path1);
+        fs.unlinkSync(path2);
+        //file removed
+    } catch (err) {
+        console.error(err)
+    }
+
+
+    res.writeHead(200, {
+        'Content-Type': 'application/pdf',
+        'Content-Disposition': 'attachment; filename=SARLTRANS-RapportFondation2020.pdf',
+        'Content-Length': dataPdf.length
+    });
+
+
+    res.status(200);
+    console.log("****End Generate Doc****");
+    res.end(dataPdf);
+
+
+}
+ exports.generateDoc=function generateDoc(req, res) {
+
+    var PizZip = require('pizzip');
+    var Docxtemplater = require('docxtemplater');
+
+    var fs = require('fs');
+    var path = require('path');
+
+//Load the docx file as a binary
+    var content = fs
+        .readFileSync(path.resolve(__dirname, 'DOC/BStemplate.docx'), 'binary');
+
+    var zip = new PizZip(content);
+
+    var doc = new Docxtemplater();
+    doc.loadZip(zip);
+
+
+
+
+//set the templateVariables
+
+    try {
+        // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
+        doc.render()
+    }
+    catch (error) {
+        var e = {
+            message: error.message,
+            name: error.name,
+            stack: error.stack,
+            properties: error.properties,
+        }
+        console.log(JSON.stringify({error: e}));
+        // The error thrown here contains additional information when logged with JSON.stringify (it contains a property object).
+        throw error;
+    }
+
+    var buf = doc.getZip()
+        .generate({type: 'nodebuffer'});
+
+// buf is a nodejs buffer, you can either write it to a file or do anything else with it.
+    fs.writeFileSync(path.resolve(__dirname, 'beautysaneBodyCheck.docx'), buf);
+
+
+
+
+     const { docxToPdfFromPath, initIva } = require("iva-converter");
+     const { writeFileSync } = require("fs");
+     const { basename } = require("path");
+
+
+     initIva("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1ZjVhZDYwODZhNjBlMTAwMjkzMjE1YWIiLCJjcmVhdGVkQXQiOjE1OTk3ODg1NTI3NDQsImlhdCI6MTU5OTc4ODU1Mn0.94vT1FMJM6p9oEdndFOMFk_-4_5LmNZcZuN29x3xQM8");
+     const filePath = __dirname+"/beautysaneBodyCheck.docx";
+// Returns a Promise
+// can be used with Async/Await
+     docxToPdfFromPath(filePath)
+         .then((pdfFile) => {
+             writeFileSync(basename(filePath).replace(".docx", ".pdf"), pdfFile);
+
+         }).then(()=>{
+             res.download("./beautysaneBodyCheck.pdf")
+     })
+         .catch((err) => {
+             // err will be the status code of the error in the remote server.
+             // We recommend having a retry logic in case you encounter a Too Many Requests (429) error code
+             // Also another interesting case is the timeout code (408) we have a default timeout at 20 seconds.
+             // Let us know if your request timeout often we help debug
+             if (err === 429 || err === 408) {
+                 // Retry logic
+             }
+         });
+
+}
+exports.generateDocRecette=function generateDocRecette(req, res) {
+     console.log(req.body.id)
+
+    fetch(endpoint+'recetteByID/'+req.params.id, {
+        method: 'GET',
+
+    }).then(response => response.json()).then((result)=> {
+
+        var json = {};
+        console.log(result)
+        json.Proteine = result[0].list_Gramme_Proteine
+        json.Personne = result[0].list_Nombre_person
+        json.Cuisson = result[0].list_Duree_Cuission+" g"
+        json.Glucide=result[0].list_Gramme_Glucide+" g"
+        json.Lipide=result[0].list_Gramme_Lipide+" g"
+        json.Ingredients=""
+
+
+        fetch('http://localhost:3001/api/ingredients/'+req.params.id, {
+            method: 'GET',
+
+        }).then(response => response.json()).then((ress)=>{
+         /*   ress.map((item,key)=>{
+               let  post = '</w:t></w:r></w:p>';
+                json.Ingredients=json.Ingredients+ '\n'+item.dose_Ingre+"g "+item.nom_Ingr
+            })
+            var lineBreak = "<w:br/>";
+            json.Ingredients=json.Ingredients.split("\n");
+            json.Ingredients=json.Ingredients.join(lineBreak)
+*/
+         let sections= ress
+            sections.forEach(function(section){
+                var lines = ("-" +section.dose_Ingre+"g "+section.nom_Ingr+"\n").split("\n")
+                var pre = "<w:p><w:r><w:t>";
+                var post = "</w:t></w:r></w:p>";
+                var lineBreak = "<w:br/>";
+                section.data = pre + lines.join(lineBreak) + post;
+            })
+            json.Ingredients=sections
+        }).then(()=>{
+            var PizZip = require('pizzip');
+            var Docxtemplater = require('docxtemplater');
+
+            var fs = require('fs');
+            var path = require('path');
+
+//Load the docx file as a binary
+            var content = fs
+                .readFileSync(path.resolve(__dirname, 'DOC/PadthaiNL.docx'), 'binary');
+
+            var zip = new PizZip(content);
+
+            var doc = new Docxtemplater();
+            doc.loadZip(zip);
+            doc.setData(json)
+
+//set the templateVariables
+
+            try {
+                // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
+                doc.render()
+            }
+            catch (error) {
+                var e = {
+                    message: error.message,
+                    name: error.name,
+                    stack: error.stack,
+                    properties: error.properties,
+                }
+                console.log(JSON.stringify({error: e}));
+                // The error thrown here contains additional information when logged with JSON.stringify (it contains a property object).
+                throw error;
+            }
+
+            var buf = doc.getZip()
+                .generate({type: 'nodebuffer'});
+
+// buf is a nodejs buffer, you can either write it to a file or do anything else with it.
+            fs.writeFileSync(path.resolve(__dirname, 'RecetteThai.docx'), buf);
+
+
+           // res.download('./api/controllers/RecetteThai.docx','RecetteThai.docx')
+
+
+                    const { docxToPdfFromPath, initIva } = require("iva-converter");
+                    const { writeFileSync } = require("fs");
+                    const { basename } = require("path");
+
+
+                    initIva("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1ZjVhZDYwODZhNjBlMTAwMjkzMjE1YWIiLCJjcmVhdGVkQXQiOjE1OTk3ODg1NTI3NDQsImlhdCI6MTU5OTc4ODU1Mn0.94vT1FMJM6p9oEdndFOMFk_-4_5LmNZcZuN29x3xQM8");
+                    const filePath = __dirname+"/RecetteThai.docx";
+            // Returns a Promise
+            // can be used with Async/Await
+                    docxToPdfFromPath(filePath)
+                        .then((pdfFile) => {
+                            writeFileSync(basename(filePath).replace(".docx", ".pdf"), pdfFile);
+
+                        }).then(()=>{
+                        res.download("./RecetteThai.pdf")
+                    })
+                        .catch((err) => {
+                            // err will be the status code of the error in the remote server.
+                            // We recommend having a retry logic in case you encounter a Too Many Requests (429) error code
+                            // Also another interesting case is the timeout code (408) we have a default timeout at 20 seconds.
+                            // Let us know if your request timeout often we help debug
+                            if (err === 429 || err === 408) {
+                                // Retry logic
+                            }
+                        });
+
+
+
+
+        })
+
+
+    }).catch(error => {
+        console.log(error);
+    });
+
+
+}
+
+function ConvertDOcVerPdf(json, code) {
+
+    return new Promise((resolve, reject) => {
+        fs.writeFileSync('C:\\tmp\\' + code + '.docx', json);
+        resolve(code + '.docx');
+    })
+
+        .then((file) => {
+
+            return new Promise((resolve, reject) => {
+                const word2pdf = require('word2pdf');
+                word2pdf('C:\\tmp\\' + file).then(data => {
+                    fs.writeFileSync('C:\\tmp\\' + code + '.pdf', data);
+                    resolve(code + ".pdf");
+
+                }).catch(err => {
+                    console.log(err)
+                });
+            })
+        })
+        .then((file) => {
+            return new Promise((resolve, reject) => {
+                var content2 = fs.readFileSync('C:\\tmp\\' + file);
+                var buf = new Buffer(content2);
+                resolve(buf);
+            })
+        });
+}
+
+function convertpdf() {
+
+}
 
