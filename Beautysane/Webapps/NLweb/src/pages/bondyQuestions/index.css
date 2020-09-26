@@ -23,3 +23,35 @@
     }
 
 }
+
+.outlineFood  {
+    border-color: #f17549;
+    color: #f17549;
+    background-color:white;
+
+}
+.outlineFood:hover {
+    background-color:#f17549;
+    color :white;
+    border-color: #f17549;
+}
+
+.outlineFood:active{
+    background-color:#f17549;
+    color :white;
+    border-color: #f17549;
+}
+
+.activee {
+    background-color:#f17549;
+    color :white;
+    border-color: #f17549;
+}
+.inactivee{
+    background-color:white;
+    color :#f17549;
+    border-color: #f17549;
+}
+
+
+

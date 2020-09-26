@@ -130,11 +130,13 @@ class Authentification extends Component {
                        <div className="row">
                            <div className="col-md-6">
                                <div className="row align-items-center">
+                                   <div className="col-md-auto">
                                    <h3>
                                        DÉJÀ CLIENT
                                    </h3>
+                                   </div>
                                    <div className="col-md-1">
-                                       <img alt="" src={user} style={{width:"100%"}}/>
+                                       <img alt="" src={user} style={{width:20}}/>
                                    </div>
                                </div>
 
@@ -172,7 +174,7 @@ class Authentification extends Component {
                                    </div>
 
                                    <div>
-                                       <Button onClick={()=>{this.props.history.push('/addRecette')}} style={{width:"100%",backgroundColor:"#00ba4c"}} variant="contained"  color="primary" disableElevation>
+                                       <Button onClick={()=>{this.login()}} style={{width:"100%",backgroundColor:"#00ba4c"}} variant="contained"  color="primary" disableElevation>
                                            Se connecter
                                        </Button>
                                    </div>
@@ -188,7 +190,7 @@ class Authentification extends Component {
                                        NOUVEAU CLIENT
                                    </h3>
                                    <div className="col-md-1">
-                                       <img alt ="" src={add} style={{width:"100%"}}/>
+                                       <img alt ="" src={add} style={{width:20}}/>
                                    </div>
                                </div>
 

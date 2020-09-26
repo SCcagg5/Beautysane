@@ -49,10 +49,17 @@ class Authentification extends Component {
         this.setState({
             openAlert: true,
             alertMessage: msg,
-            alertType: type
+            alertType: type,
+            to:""
         });
     };
 
+    componentDidMount() {
+        let to = this.props.match.params.to
+        this.setState({
+            to:to
+        })
+    }
 
     register(){
         this.setState({loadingreg:true})
@@ -95,7 +102,7 @@ class Authentification extends Component {
                 localStorage.setItem('user',JSON.stringify(user));
                 localStorage.setItem('role',user.role);
 
-                this.props.history.push('/addRecette');
+                this.props.history.push('/'+this.state.to+'/vue');
                 console.log(user)
                 this.setState({
                     loading:false

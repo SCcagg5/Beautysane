@@ -9,42 +9,67 @@ import "video-react/dist/video-react.css"; // import css
 import MySnackbarContentWrapper from "../../tools/customSnackBar";
 import firebase from "firebase";
 import  Loader from "../../components/Loader"
+import { withStyles } from '@material-ui/core/styles';
+import ListSubheader from '@material-ui/core/ListSubheader';
+import  recetteService from "../../provider/webservice"
 
-
+import plus from "../../assets/images/icons/plus.svg"
 
 
 import Snackbar from "@material-ui/core/Snackbar"
 
 import { Player } from 'video-react';
 
+import FileBase64 from 'react-file-base64';
+import { Dropdown } from 'semantic-ui-react'
 
-
-
+const useStyles = withStyles((theme) => ({
+    formControl: {
+        margin: theme.spacing(1),
+        minWidth: 120,
+    },
+    selectEmpty: {
+        marginTop: theme.spacing(2),
+    },
+}));
 class AddRecette extends Component {
     constructor(props){
         super(props);
         this.state={
             test:45,
             data:{
-                nomRecette:"",
-                Duree_prepa_repas:"",
-                Duree_Cuission:"",
-                Nombre_person:"",
-                Nombre_calorie:"",
-                Pourcentrage_glucides:"",
-                Pourcentrage_lipides:"",
-                Pourcentrage_proteines:"",
-                Gramme_Glucide:"",
-                Gramme_Lipide:"",
-                Gramme_Proteine:"",
-                Ingredients:"",
-                Preparation:"",
-                photo :"",
-                video:"",
-                Tendances:"",
+                list_nomRecette:"",
+                list_Duree_prepa_repas:"",
+                list_Duree_Cuission:"",
+                list_Nombre_person:"",
+                list_Nombre_calorie:"",
+                list_Pourcentrage_glucides:"",
+                list_Pourcentrage_lipides:"",
+                list_Pourcentrage_proteines:"",
+                list_Gramme_Glucide:"",
+                list_Gramme_Lipide:"",
+                list_Gramme_Proteine:"",
+                nutriscore:"",
+
+
+                list_photo :"",
+                list_video:"",
+                list_Tendances:"",
                 plat:"",
 
 
+
+
+            },
+           loading1:false,
+            nutriscore:"Non disponible",
+
+            ingr:[],
+            Ingredients:{
+                legumes:[],
+                cerealiers:[],
+                laitiers:[],
+                viandes:[]
 
             },
             openAlert: false,
@@ -53,22 +78,81 @@ class AddRecette extends Component {
             loading :false,
             percentage:"",
             dataLength:"",
-            recettes:[]
+            recettes:[],
+            files:"",
+            ing:[],
+            foodlist:{
+                legumes:[],
+                cerealiers:[],
+                laitiers: [],
+                viande:[]
+            }
         }
 }
 
 componentDidMount() {
+    this.setState({loading1:true})
+
+    fetch('https://ayurws.azurewebsites.net/foodsV2', {
+        method: 'GET',
+
+    }).then(response => response.json()).then((res)=>{
+        console.log(res)
+        res.map((item,key)=>{
+            if (item.alim_ssgrp_nom_fr.includes("legume")||item.alim_ssssgrp_nom_fr.includes("legume")||item.alim_grp_nom_fr.includes("legume")){
+                this.state.foodlist.legumes.push({
+                    key:item.itemID,
+                    value:item.itemID,
+                    text:item.alim_nom_fr,
+                    name:item.alim_nom_fr,
+                    proteines:item.Proteines,
+                    glucides:item.Glucides,
+                    lipides:item.Lipides,
+                })
+
+            }else if (item.alim_ssgrp_nom_fr.includes("viande")||item.alim_ssssgrp_nom_fr.includes("viande")||item.alim_grp_nom_fr.includes("viande")){
+                this.state.foodlist.viande.push({
+                    key:item.itemID,
+                    value:item.itemID,
+                    text:item.alim_nom_fr
+                })
+
+            }else if (item.alim_ssgrp_nom_fr.includes("cerealier")||item.alim_ssgrp_nom_fr.includes("beautysane")||item.alim_ssssgrp_nom_fr.includes("cerealier")||item.alim_grp_nom_fr.includes("cerealier")){
+                this.state.foodlist.cerealiers.push({
+                    key:item.itemID,
+                    value:item.itemID,
+                    text:item.alim_nom_fr
+                })
+
+            }else if (item.alim_ssgrp_nom_fr.includes("laitier")||item.alim_ssssgrp_nom_fr.includes("laitier")||item.alim_grp_nom_fr.includes("laitier")){
+                this.state.foodlist.laitiers.push({
+                    key:item.itemID,
+                    value:item.itemID,
+                    text:item.alim_nom_fr
+                })
+
+            }
+        })
+    }).then(()=>this.setState({loading1:false})).catch(error => {
+        console.log(error);
+    });
+
+
     firebase.database().ref("recettes/").on("value", (snapshot) => {
         let recettes = snapshot.val();
 
-        let rets =[]
-        for (let i =0 ;i<recettes.length;i++){
+        if (recettes !=null) {
 
-            rets.push(recettes[i])
+            let rets = []
+            for (let i = 0; i < recettes.length; i++) {
 
+                rets.push(recettes[i])
+
+            }
+
+            this.setState({recettes: rets})
         }
 
-        this.setState(   {recettes:rets})
 
 
 
@@ -77,8 +161,25 @@ componentDidMount() {
     })
 }
 
+addItem(name){
+        let data= this.state.Ingredients
+
+    data[name].push({
+        nom_Ingr:"",
+        dose_Ingre:"",
+        id_ingr:""
+    })
+    this.setState({Ingredients:data})
+}
+    getFiles(files){
+
+        let data = this.state.data
+        data.list_photo=files.base64
+
+        this.setState({ data: data })
+    }
     handleChange(event,name){
-        if (name==="photo"||name==="video"){
+        if (name==="list_photo"||name==="list_video"){
            let data = this.state.data
             data[name]=event.target.files[0]
             this.setState({data:data})
@@ -91,19 +192,268 @@ componentDidMount() {
             this.setState({data: data})
         }
 }
+
+    uploadlist_video(event) {
+
+
+        var list_video = event.target.files[0]
+
+
+        if (list_video !== undefined) {
+            this.setState({loading: true})
+            var storageRef = firebase.storage().ref().child('/recettes/' + list_video.name);
+            var file = list_video;
+            var uploadTask = storageRef.put(file);
+
+
+            uploadTask.on('state_changed', snapshot => {
+                var percentage = snapshot.bytesTransferred / snapshot.totalBytes * 100;
+                this.setState({percentage: percentage.toFixed(2)})
+                switch (snapshot.state) {
+                    case firebase.storage.TaskState.PAUSED: // or 'paused'
+                        console.log('Upload is paused');
+                        break;
+                    case firebase.storage.TaskState.RUNNING: // or 'running'
+                        console.log('Upload is running');
+                        break;
+                    /* no default */
+                }
+            }, error => {
+                console.log(error);
+            }, () => {
+
+                uploadTask.snapshot.ref.getDownloadURL().then(downloadURL => {
+                    console.log('File available at', downloadURL);
+                    let data = this.state.data;
+                    data.list_video = downloadURL;
+                    this.setState({
+                        data: data
+                    });
+                    this.setState({loading: false});
+
+                });
+            });
+        }
+    };
+
+    verify(){
+        let data = this.state.data
+        if (
+            data.list_nomRecette===""||
+            data.list_Duree_prepa_repas===""||
+            data.list_Duree_Cuission===""||
+            data.list_Nombre_person===""||
+            data.list_Nombre_calorie===""||
+            data.list_Pourcentrage_glucides===""||
+            data.list_Pourcentrage_lipides===""||
+            data.list_Pourcentrage_proteines===""||
+            data.list_Gramme_Glucide===""||
+            data.list_Gramme_Lipide===""||
+            data.list_Gramme_Proteine===""||
+            data.Ingredients===""||
+            data.Preparation===""||
+            data.list_photo ===""||
+            data.list_video===""
+        ){
+            return true
+        }else {
+            return false
+        }
+    }
+
+    calculNutriscore(){
+
+        let header = new Headers()
+        header.append('Content-Type','application/json')
+        let dd = this.getingr()
+
+
+        let data =[]
+        dd.map((item,key)=>{
+            data.push({
+                id:item.id_ingr,
+                pds:item.dose_Ingre
+            })
+        })
+
+        console.log(data)
+        fetch('https://ayurws.azurewebsites.net/recette/nutriscore', {
+            method: 'POST',
+            headers:header,
+            body:JSON.stringify(data)
+        }).then(response => {
+            let res = response.text()
+            console.log(response)
+            if (response.status===200){
+                let data = this.state.data
+                data.nutriscore=res
+                this.setState({data:data})
+            }else {
+                let data = this.state.data
+                data.nutriscore="indisponible"
+                this.setState({data:data})
+            }
+        })
+    }
+
+getingr(){
+        let data = this.state.Ingredients
+
+    let dd=[]
+    if (data.legumes.length!=0){
+        data.legumes.map((item,ket)=>{
+            dd.push(item)
+        })
+    }
+
+    if (data.laitiers.length!=0){
+        data.laitiers.map((item,ket)=>{
+            dd.push(item)
+        })
+    }
+    if (data.cerealiers.length!=0){
+        data.cerealiers.map((item,ket)=>{
+            dd.push(item)
+        })
+    }
+
+    if (data.viandes.length!=0){
+        data.viandes.map((item,ket)=>{
+            dd.push(item)
+        })
+    }
+
+
+    this.setState({ingr:dd})
+
+return dd
+
+}
+    saveData(){
+
+
+
+
+
+
+        let header = new Headers()
+        header.append('Content-Type','application/json')
+        let dd = this.getingr()
+
+
+        let data =[]
+        dd.map((item,key)=>{
+            data.push({
+                id:item.id_ingr,
+                pds:item.dose_Ingre
+            })
+        })
+
+        console.log(data)
+        fetch('https://ayurws.azurewebsites.net/recette/nutriscore', {
+            method: 'POST',
+            headers:header,
+            body:JSON.stringify(data)
+        }).then(response =>
+            response.text()).then((response)=>{
+            console.log(response.toString())
+            let zz = this.state.data
+            if (response.toString().length===1){
+                zz.nutriscore=response.toString()
+                this.setState({data:zz})
+            }else{
+                zz.nutriscore="indisponible"
+                this.setState({data:zz})
+            }
+
+
+        }).then(()=>{
+            let dd = this.getingr()
+            return dd
+        }).then((dd)=>{
+
+
+            let lipides=0
+            let proteines=0
+            let glucides=0
+            this.state.ingr.map((item,key)=>{
+
+                fetch('https://ayurws.azurewebsites.net/foodsV2/'+item.id_ingr, {
+                    method: 'GET',
+
+                }).then(response => response.json()).then((res)=>{
+                    lipides = lipides + ((parseFloat(res.Lipides)* parseFloat(item.dose_Ingre))/100)
+                    proteines=proteines +  ((parseFloat(res.Proteines)* parseFloat(item.dose_Ingre))/100)
+                    glucides=glucides+((parseFloat(res.Glucides)* parseFloat(item.dose_Ingre))/100)
+                    let dataR = this.state.data
+                    dataR.list_Gramme_Glucide=glucides
+                    dataR.list_Gramme_Lipide=lipides
+                    dataR.list_Gramme_Proteine=proteines
+
+
+                    console.log(lipides,glucides,proteines)
+
+                    this.setState({data:dataR})
+                })
+
+
+
+
+            })
+
+
+
+
+        }).then (()=>{
+
+            setTimeout(
+                function() {
+                    recetteService.CreateRecette(this.state.data).then(res=>{
+
+
+
+                        dd.map((item,key)=>{
+                            item.id_rec=res.data
+
+                            recetteService.createIngredient(item).then(res=>{
+                                console.log(res)
+                            })
+
+                        })
+
+                    }).then(()=>{
+                        this.setState({openAlert:true,alertMessage:"Recette creer avec success",alertType:'success'})
+                    })
+                }
+                    .bind(this),
+                3000
+            );
+
+
+
+        })
+
+
+
+
+
+
+
+
+    }
     uploadImage(event) {
 
 
-        var photo = event.target.files[0]
+        var list_photo = event.target.files[0]
 
-        if (photo !== undefined) {
+        if (list_photo !== undefined) {
 
 
             this.setState({loading: true})
 
 
-            var storageRef = firebase.storage().ref().child('/recettes/' + photo.name);
-            var file = photo;
+            var storageRef = firebase.storage().ref().child('/recettes/' + list_photo.name);
+            var file = list_photo;
             var uploadTask = storageRef.put(file);
 
 
@@ -130,7 +480,7 @@ componentDidMount() {
                 uploadTask.snapshot.ref.getDownloadURL().then(downloadURL => {
                     console.log('File available at', downloadURL);
                     let data = this.state.data;
-                    data.photo = downloadURL;
+                    data.list_photo = downloadURL;
                     this.setState({
                         data: data
                     });
@@ -142,88 +492,74 @@ componentDidMount() {
 
         }
     }
-    uploadVideo(event) {
+    dropdownHangleChange(event,e,name1,name2,key){
+
+        console.log(e.target.textContent)
 
 
-        var video = event.target.files[0]
+        let data = this.state.Ingredients
+        data[name1][key]["id_ingr"] = event.value
+        data[name1][key]["nom_Ingr"] = e.target.textContent
+        this.setState({Ingredients: data})
 
-
-        if (video !== undefined) {
-            this.setState({loading: true})
-            var storageRef = firebase.storage().ref().child('/recettes/' + video.name);
-            var file = video;
-            var uploadTask = storageRef.put(file);
-
-
-            uploadTask.on('state_changed', snapshot => {
-                var percentage = snapshot.bytesTransferred / snapshot.totalBytes * 100;
-                this.setState({percentage: percentage.toFixed(2)})
-                switch (snapshot.state) {
-                    case firebase.storage.TaskState.PAUSED: // or 'paused'
-                        console.log('Upload is paused');
-                        break;
-                    case firebase.storage.TaskState.RUNNING: // or 'running'
-                        console.log('Upload is running');
-                        break;
-                    /* no default */
-                }
-            }, error => {
-                console.log(error);
-            }, () => {
-
-                uploadTask.snapshot.ref.getDownloadURL().then(downloadURL => {
-                    console.log('File available at', downloadURL);
-                    let data = this.state.data;
-                    data.video = downloadURL;
-                    this.setState({
-                        data: data
-                    });
-                    this.setState({loading: false});
-
-                });
-            });
-        }
-    };
-
-    verify(){
-        let data = this.state.data
-        if (
-            data.nomRecette===""||
-            data.Duree_prepa_repas===""||
-            data.Duree_Cuission===""||
-            data.Nombre_person===""||
-            data.Nombre_calorie===""||
-            data.Pourcentrage_glucides===""||
-            data.Pourcentrage_lipides===""||
-            data.Pourcentrage_proteines===""||
-            data.Gramme_Glucide===""||
-            data.Gramme_Lipide===""||
-            data.Gramme_Proteine===""||
-            data.Ingredients===""||
-            data.Preparation===""||
-            data.photo ===""||
-            data.video===""
-        ){
-            return true
-        }else {
-            return false
-        }
+        console.log(this.state.Ingredients)
     }
 
 
-    saveData(){
+
+    handleChange2(event,name1,name2,key){
+
+        if (name2==="nom_Ingr"){
+            const { myValue } = event.currentTarget.dataset;
+            // --> 123
 
 
-        let recettes = this.state.recettes
-        recettes.push(this.state.data)
 
-        firebase.database().ref("recettes/").set(
-            recettes
-        ).then(()=>{
-            this.setState({openAlert:true,alertMessage:"Recette creer avec success",alertType:'success'})
-        })
+            let data = this.state.Ingredients
+            data[name1][key][name2] = myValue
+            data[name1][key]["id_ingr"]=event.target.value
+            this.setState({Ingredients: data})
+        }else{
+            let data = this.state.Ingredients
+            data[name1][key][name2] = event.target.value
+            this.setState({Ingredients: data})
+        }
 
-    }
+
+
+
+
+        }
+
+        calculePGl(data){
+
+            let lipides=0
+            let proteines=0
+            let glucides=0
+            data.map((item,key)=>{
+
+                fetch('https://ayurws.azurewebsites.net/foodsV2/'+item.id_ingr, {
+                    method: 'GET',
+
+                }).then(response => response.json()).then((res)=>{
+                    lipides = lipides + ((parseFloat(res.Lipides)* parseFloat(item.dose_Ingre))/100)
+                    proteines=proteines +  ((parseFloat(res.Proteines)* parseFloat(item.dose_Ingre))/100)
+                    glucides=glucides+((parseFloat(res.Glucides)* parseFloat(item.dose_Ingre))/100)
+                }).then(()=>{
+                    let dataR = this.state.data
+                        dataR.list_Gramme_Glucide=glucides
+                        dataR.list_Gramme_Lipide=lipides
+                        dataR.list_Gramme_Proteine=proteines
+
+                    this.setState({data:dataR})
+                })
+
+            })
+        }
+
+
+
+
 
 
 
@@ -231,6 +567,13 @@ componentDidMount() {
 
 
     render() {
+
+
+
+        const legumes = this.state.foodlist.legumes
+        const cereliers=this.state.foodlist.cerealiers
+        const laitiers=this.state.foodlist.laitiers
+        const viandes=this.state.foodlist.viande
 
         return (
             <div >
@@ -253,8 +596,8 @@ componentDidMount() {
                                     <TextField InputLabelProps={{
                                         shrink: true,
                                     }} required id="standard-required" label="Nom du repas"  style={{width:"100%"}}
-                                     value={this.state.data.nomRecette}
-                                    onChange={(e)=>this.handleChange(e,"nomRecette")}/>
+                                     value={this.state.data.list_nomRecette}
+                                    onChange={(e)=>this.handleChange(e,"list_nomRecette")}/>
 
 
 
@@ -266,12 +609,13 @@ componentDidMount() {
                                     </div>
 
                                     <Select
-                                        onChange={(e)=>{this.handleChange(e,"Duree_prepa_repas")}}
-                                        value={this.state.data.Duree_prepa_repas}
+                                        onChange={(e)=>{this.handleChange(e,"list_Duree_prepa_repas")}}
+                                        value={this.state.data.list_Duree_prepa_repas}
                                         style={{width:"100%"}}
                                         labelId="demo-simple-select-label"
                                         id="demo-simple-select"
                                     >
+
                                         <MenuItem value={"5 min"}>5 min </MenuItem>
                                         <MenuItem value={"10 min"}>10 min</MenuItem>
                                         <MenuItem value={"15 min"}>15 min </MenuItem>
@@ -289,8 +633,8 @@ componentDidMount() {
                                     </div>
 
                                     <Select
-                                        value={this.state.data.Duree_Cuission}
-                                        onChange={(e)=>this.handleChange(e,"Duree_Cuission")}
+                                        value={this.state.data.list_Duree_Cuission}
+                                        onChange={(e)=>this.handleChange(e,"list_Duree_Cuission")}
                                         style={{width:"100%"}}
                                         labelId="demo-simple-select-label"
                                         id="demo-simple-select"
@@ -309,11 +653,12 @@ componentDidMount() {
                                     </div>
 
                                     <Select
-                                        value={this.state.data.Nombre_person}
-                                        onChange={(e)=>this.handleChange(e,"Nombre_person")}
+                                        value={this.state.data.list_Nombre_person}
+                                        onChange={(e)=>this.handleChange(e,"list_Nombre_person")}
                                         style={{width:"100%"}}
                                         labelId="demo-simple-select-label"
                                         id="demo-simple-select"
+                                        displayEmpty={false}
                                     >
                                         <MenuItem value={"1"}>1 </MenuItem>
                                         <MenuItem value={"2"}>2</MenuItem>
@@ -327,210 +672,975 @@ componentDidMount() {
                                     </Select>
                                 </div>
                                 </div>
-                                <div className="row justify-content-around  align-items-center mt-3 ">
-                                <div className="col-md-3">
-                                    <TextField InputLabelProps={{
-                                        shrink: true,
-                                    }} id="standard-basic" label="Nombre de calories" type="number" style={{width:"100%"}}
-                                    value={this.state.data.Nombre_calorie}
-                                    onChange={(e)=>this.handleChange(e,"Nombre_calorie")}/>
-
-                                </div>
-                                <div className="col-md-3">
-                                <div className="row align-items-center mt-3 text-center justify-content-center w-100 ">
 
 
-                                    <TextField InputLabelProps={{
-                                        shrink: true,
-                                    }} id="standard-basic" label="Pourcentage glucides" type="number" style={{width:"90%"}}
-                                    value={this.state.data.Pourcentrage_glucides}
-                                    onChange={(e)=>this.handleChange(e,"Pourcentrage_glucides")}/>
-                                    <InputLabel >%</InputLabel>
-
-
-
-
-
-                                </div>
-                                </div>
-                                </div>
-
-                        <div className="row justify-content-around align-items-center mt-3">
-                            <div className="col-md-3">
-                                <div className="row align-items-center mt-3 text-center justify-content-center ">
-
-
-                                    <TextField  InputLabelProps={{
-                                        shrink: true,
-                                    }}id="standard-basic" label="Pourcentage Lipides" type="number"  style={{width:"90%"}}
-                                    value={this.state.data.Pourcentrage_lipides}
-                                    onChange={(e)=>this.handleChange(e,"Pourcentrage_lipides")}/>
-                                    <InputLabel >%</InputLabel>
-
-                                </div>
-                            </div>
-                            <div className="col-md-3">
-                                <div className="row align-items-center mt-3 text-center justify-content-center ">
-
-
-                                    <TextField  InputLabelProps={{
-                                        shrink: true,
-                                    }}id="standard-basic" label="Pourcentage Proteines" type="number"  style={{width:"90%"}}
-                                    value={this.state.data.Pourcentrage_proteines}
-                                    onChange={(e)=>this.handleChange(e,"Pourcentrage_proteines")}/>
-                                    <InputLabel >%</InputLabel>
-
-
-
-
-
-                                </div>
-                            </div>
-
-
+                       <div className="row">
+                        <div className="col-md-10 mt-5">
+                            <h5 className="font-weight-bold">Ingredient liste</h5>
+                            <hr style={{height:2 ,width:"100%",backgroundColor:"black"}}/>
                         </div>
+                           <div className="col-md-2 mt-5">
+                               <h5 className="font-weight-bold">Grammage correspondant</h5>
+                               <hr style={{height:2 ,width:"100%",backgroundColor:"black"}}/>
+                           </div>
+                       </div>
 
-                        <div className="row justify-content-around align-items-center mt-3">
-                                <div className="col-md-3">
-                                    <div className="row align-items-center mt-3 text-center justify-content-center ">
+                        {this.state.loading1===false&& <div>
+                            <h5 style={{color:"blue"}}> Fruits et legumes </h5>
+
+                            {this.state.Ingredients.legumes.map((item,key)=>(
+                                <div className="row mb-5">
+                                    <div className="col-md-10 ">
+                                        <div className="row align-items-center justify-content-start">
+
+                                            <div className="col-md-auto">
+                                                <text>{key +1})</text>
+
+                                            </div>
+                                            <div className="col-md-3">
+
+                                                <Dropdown
+
+                                                    name="legumes"
+                                                    value={this.state.Ingredients.legumes[key].id_ingr}
+                                                    placeholder='Search fruit et legume'
+                                                    onChange={(e,data)=>this.dropdownHangleChange(data,e,"legumes","nom_Ingr",key)}
+                                                    fluid
 
 
-                                        <TextField InputLabelProps={{
-                                            shrink: true,
-                                        }} id="standard-basic" label="Gramme glucides" type="number" style={{width:"90%"}}
-                                        value={this.state.data.Gramme_Glucide}
-                                        onChange={(e)=>this.handleChange(e,"Gramme_Glucide")}/>
-                                        <InputLabel >g</InputLabel>
+
+                                                    search
+                                                    selection
+                                                    renderLabel={(e)=>{console.log(e)}}
+                                                    options={legumes}
+                                                />
+                                            </div>
+                                            <div className="col-md-1">
+
+                                                <div>
+                                                    <InputLabel id="demo-simple-select-label">A-B</InputLabel>
+                                                </div>
+
+                                                <Select
+                                                    value={this.state.Ingredients.legumes[key].id_ingr}
+                                                    onChange={(e)=>this.handleChange2(e,"legumes","nom_Ingr",key)}
+                                                    style={{width:"100%"}}
+
+
+                                                    labelId="demo-simple-select-label"
+                                                    id="demo-simple-select"
+                                                >
+                                                    { legumes.filter(name => (name.text.startsWith('A')||name.text.startsWith('B'))).map(filteredName => (
+                                                        <MenuItem value={filteredName.value}  data-my-value={filteredName.text}  >{filteredName.text} </MenuItem>
+                                                    ))}
+
+                                                </Select>
+                                            </div>
+                                            <div className="col-md-1">
+
+                                                <div>
+                                                    <InputLabel id="demo-simple-select-label">C</InputLabel>
+                                                </div>
+
+                                                <Select
+                                                    value={this.state.Ingredients.legumes[key].id_ingr}
+                                                    onChange={(e)=>this.handleChange2(e,"legumes","nom_Ingr",key)}
+                                                    style={{width:"100%"}}
+
+                                                    labelId="demo-simple-select-label"
+                                                    id="demo-simple-select"
+                                                >
+                                                    {this.state.foodlist.legumes.filter(name => (name.text.startsWith('C'))).map(filteredName => (
+                                                        <MenuItem value={filteredName.value}  data-my-value={filteredName.text}  >{filteredName.text} </MenuItem>
+                                                    ))}
+
+                                                </Select>
+                                            </div>
+                                            <div className="col-md-1">
+
+                                                <div>
+                                                    <InputLabel id="demo-simple-select-label">D-E-F</InputLabel>
+                                                </div>
+
+                                                <Select
+                                                    value={this.state.Ingredients.legumes[key].id_ingr}
+                                                    onChange={(e)=>this.handleChange2(e,"legumes","nom_Ingr",key)}
+                                                    style={{width:"100%"}}
+
+                                                    labelId="demo-simple-select-label"
+                                                    id="demo-simple-select"
+                                                >
+                                                    {this.state.foodlist.legumes.filter(name => (name.text.startsWith('D')||name.text.startsWith('E')||name.text.startsWith('F'))).map(filteredName => (
+                                                        <MenuItem value={filteredName.value}  data-my-value={filteredName.text}  >{filteredName.text} </MenuItem>
+                                                    ))}
+
+                                                </Select>
+                                            </div>
+                                            <div className="col-md-1">
+
+                                                <div>
+                                                    <InputLabel id="demo-simple-select-label">G-H-I</InputLabel>
+                                                </div>
+
+                                                <Select
+                                                    value={this.state.Ingredients.legumes[key].id_ingr}
+                                                    onChange={(e)=>this.handleChange2(e,"legumes","nom_Ingr",key)}
+                                                    style={{width:"100%"}}
+
+                                                    labelId="demo-simple-select-label"
+                                                    id="demo-simple-select"
+                                                >
+                                                    {this.state.foodlist.legumes.filter(name => (name.text.startsWith('G')||name.text.startsWith('H')||name.text.startsWith('I'))).map(filteredName => (
+                                                        <MenuItem value={filteredName.value}  data-my-value={filteredName.text}  >{filteredName.text} </MenuItem>
+                                                    ))}
+
+                                                </Select>
+                                            </div>
+                                            <div className="col-md-1">
+
+                                                <div>
+                                                    <InputLabel id="demo-simple-select-label">J-K-L</InputLabel>
+                                                </div>
+
+                                                <Select
+                                                    value={this.state.Ingredients.legumes[key].id_ingr}
+                                                    onChange={(e)=>this.handleChange2(e,"legumes","nom_Ingr",key)}
+                                                    style={{width:"100%"}}
+
+                                                    labelId="demo-simple-select-label"
+                                                    id="demo-simple-select"
+                                                >
+                                                    {this.state.foodlist.legumes.filter(name => (name.text.startsWith('J')||name.text.startsWith('K')||name.text.startsWith('L'))).map(filteredName => (
+                                                        <MenuItem value={filteredName.value}  data-my-value={filteredName.text}  >{filteredName.text} </MenuItem>
+                                                    ))}
+
+                                                </Select>
+                                            </div>
+                                            <div className="col-md-1">
+
+                                                <div>
+                                                    <InputLabel id="demo-simple-select-label">M-N-O</InputLabel>
+                                                </div>
+
+                                                <Select
+                                                    value={this.state.Ingredients.legumes[key].id_ingr}
+                                                    onChange={(e)=>this.handleChange2(e,"legumes","nom_Ingr",key)}
+                                                    style={{width:"100%"}}
+
+                                                    labelId="demo-simple-select-label"
+                                                    id="demo-simple-select"
+                                                >
+                                                    {this.state.foodlist.legumes.filter(name => (name.text.startsWith('M')||name.text.startsWith('N')||name.text.startsWith('O'))).map(filteredName => (
+                                                        <MenuItem value={filteredName.value}  data-my-value={filteredName.text}  >{filteredName.text} </MenuItem>
+                                                    ))}
+
+                                                </Select>
+                                            </div>
+                                            <div className="col-md-1">
+
+                                                <div>
+                                                    <InputLabel id="demo-simple-select-label">P-Q</InputLabel>
+                                                </div>
+
+                                                <Select
+                                                    value={this.state.Ingredients.legumes[key].id_ingr}
+                                                    onChange={(e)=>this.handleChange2(e,"legumes","nom_Ingr",key)}
+                                                    style={{width:"100%"}}
+
+                                                    labelId="demo-simple-select-label"
+                                                    id="demo-simple-select"
+                                                >
+                                                    {this.state.foodlist.legumes.filter(name => (name.text.startsWith('P')||name.text.startsWith('Q'))).map(filteredName => (
+                                                        <MenuItem value={filteredName.value}  data-my-value={filteredName.text}  >{filteredName.text} </MenuItem>
+                                                    ))}
+
+                                                </Select>
+                                            </div>
+                                            <div className="col-md-1">
+
+                                                <div>
+                                                    <InputLabel id="demo-simple-select-label">R-S-T</InputLabel>
+                                                </div>
+
+                                                <Select
+                                                    value={this.state.Ingredients.legumes[key].id_ingr}
+                                                    onChange={(e)=>this.handleChange2(e,"legumes","nom_Ingr",key)}
+                                                    style={{width:"100%"}}
+
+                                                    labelId="demo-simple-select-label"
+                                                    id="demo-simple-select"
+                                                >
+                                                    {this.state.foodlist.legumes.filter(name => (name.text.startsWith('R')||name.text.startsWith('S')||name.text.startsWith('T'))).map(filteredName => (
+                                                        <MenuItem value={filteredName.value}  data-my-value={filteredName.text}  >{filteredName.text} </MenuItem>
+                                                    ))}
+
+                                                </Select>
+                                            </div>
 
 
 
 
-
+                                        </div>
                                     </div>
-                                </div>
-                                <div className="col-md-3">
-                                    <div className="row align-items-center mt-3 text-center justify-content-center ">
-
-
-                                        <TextField InputLabelProps={{
-                                            shrink: true,
-                                        }} id="standard-basic" label="Gramme lipides" type="number"  style={{width:"90%"}}
-                                        value={this.state.data.Gramme_Lipide}
-                                        onChange={(e)=>this.handleChange(e,"Gramme_Lipide")}/>
-                                        <InputLabel >g</InputLabel>
+                                    <div className="col-md-2">
 
 
 
 
+                                        <div>
+                                            <InputLabel id="demo-simple-select-label">Grammages correspondant</InputLabel>
+                                        </div>
 
+                                        <Select
+                                            value={this.state.Ingredients.legumes[key].dose_Ingre}
+                                            onChange={(e)=>this.handleChange2(e,"legumes","dose_Ingre",key)}
+                                            style={{width:"100%"}}
+                                            labelId="demo-simple-select-label"
+                                            id="demo-simple-select"
+                                            displayEmpty={false}
+                                        >
+                                            <ListSubheader style={{fontWeight :"bold"}}>cueillère à café	5 grammes </ListSubheader>
+                                            <MenuItem value={5}>1 cc </MenuItem>
+                                            <MenuItem value={10}>2 cc</MenuItem>
+                                            <MenuItem value={15}>3 cc  </MenuItem>
+                                            <MenuItem value={20}>4 cc</MenuItem>
+                                            <MenuItem value={25}>5 cc </MenuItem>
+                                            <ListSubheader style={{fontWeight :"bold"}}>cuillere à soupe	15 grammes </ListSubheader>
+                                            <MenuItem value={15}>1 cs </MenuItem>
+                                            <MenuItem value={30}>2 cs</MenuItem>
+                                            <MenuItem value={45}>3 cs </MenuItem>
+                                            <MenuItem value={60}>4 cs</MenuItem>
+                                            <MenuItem value={75}>5 cs </MenuItem>
+                                            <ListSubheader style={{fontWeight :"bold"}}>Une tasse	115 grammes </ListSubheader>
+                                            <MenuItem value={115}>1 t </MenuItem>
+                                            <MenuItem value={230}>2 t</MenuItem>
+                                            <MenuItem value={345}>3 t</MenuItem>
+                                            <MenuItem value={460}>4 t</MenuItem>
+                                            <MenuItem value={575}>5 t</MenuItem>
+                                            <ListSubheader style={{fontWeight :"bold"}}>Décilitre ( 100 gr environ )	100 grammes</ListSubheader>
+                                            <MenuItem value={100}>1 dc</MenuItem>
+                                            <MenuItem value={200}>2 dc</MenuItem>
+                                            <MenuItem value={300}>3 dc</MenuItem>
+                                            <MenuItem value={400}>4 dc</MenuItem>
+                                            <MenuItem value={500}>5 dc</MenuItem>
+                                            <ListSubheader style={{fontWeight :"bold"}}>Nombres</ListSubheader>
+                                            <MenuItem value={1}>1</MenuItem>
+                                            <MenuItem value={2}>2</MenuItem>
+                                            <MenuItem value={3}>3</MenuItem>
+                                            <MenuItem value={4}>4</MenuItem>
+                                            <MenuItem value={5}>5</MenuItem>
+
+
+                                        </Select>
                                     </div>
+
+
+
+
+
+
                                 </div>
-                        </div>
-                        <div className="row justify-content-around mt-3">
+                            ))}
 
-                            <div className="col-md-3">
-                                    <div className="row align-items-center mt-3 text-center justify-content-center ">
+                            <div className="col-md-1">
+                                <img src={plus} style={{width:"40%" ,cursor:"pointer"}} onClick={()=>{this.addItem("legumes")}}/>
+                            </div>
+
+                            <h5 style={{color:"blue"}}> Produits cerealiers </h5>
+
+                            {this.state.Ingredients.cerealiers.map((item,key)=>(
+                                <div className="row mb-5 ">
+                                    <div className="col-md-10 ">
+                                        <div className="row align-items-center justify-content-start">
+
+                                            <div className="col-md-auto">
+                                                <text>{key +1})</text>
+
+                                            </div>
+                                            <div className="col-md-3">
+
+                                                <Dropdown
+
+                                                    name="legumes"
+                                                    value={this.state.Ingredients.cerealiers[key].id_ingr}
+                                                    placeholder='search cereliers'
+                                                    onChange={(e,data)=>this.dropdownHangleChange(data,e,"cerealiers","nom_Ingr",key)}
+
+                                                    fluid
+                                                    search
+                                                    selection
+                                                    options={cereliers}
+                                                />
+                                            </div>
+                                            <div className="col-md-2">
+
+                                                <div>
+                                                    <InputLabel id="demo-simple-select-label" >A-B</InputLabel>
+                                                </div>
+
+                                                <Select
+                                                    value={this.state.Ingredients.cerealiers[key].id_ingr}
+                                                    onChange={(e)=>this.handleChange2(e,"cerealiers","nom_Ingr",key)}
+                                                    style={{width:"100%"}}
+
+                                                    labelId="demo-simple-select-label"
+                                                    id="demo-simple-select"
+                                                >
+                                                    {this.state.foodlist.cerealiers.filter(name => (name.text.startsWith('A')||name.text.startsWith('B'))).map(filteredName => (
+                                                        <MenuItem value={filteredName.value}  data-my-value={filteredName.text}  >{filteredName.text} </MenuItem>
+                                                    ))}
+
+                                                </Select>
 
 
-                                        <TextField InputLabelProps={{
-                                            shrink: true,
-                                        }} id="standard-basic" label="Gramme Proteines" type="number" style={{width:"90%"}}
-                                        value={this.state.data.Gramme_Proteine}
-                                        onChange={(e)=>this.handleChange(e,"Gramme_Proteine")}/>
-                                        <InputLabel >g</InputLabel>
+                                            </div>
+                                            <div className="col-md-2">
+
+                                                <div>
+                                                    <InputLabel id="demo-simple-select-label">C-D-E-F-..-M</InputLabel>
+                                                </div>
+
+                                                <Select
+                                                    value={this.state.Ingredients.cerealiers[key].id_ingr}
+                                                    onChange={(e)=>this.handleChange2(e,"cerealiers","nom_Ingr",key)}
+                                                    style={{width:"100%"}}
+
+                                                    labelId="demo-simple-select-label"
+                                                    id="demo-simple-select"
+                                                >
+                                                    {this.state.foodlist.cerealiers.filter(name => (name.text.startsWith('C')
+                                                        ||name.text.startsWith('D')||name.text.startsWith('E')||name.text.startsWith('F')||name.text.startsWith('G')
+                                                        ||name.text.startsWith('H')||name.text.startsWith('I')||name.text.startsWith('J')||name.text.startsWith('K')
+                                                        ||name.text.startsWith('l')||name.text.startsWith('M'))).map(filteredName => (
+                                                        <MenuItem value={filteredName.value}  data-my-value={filteredName.text}  >{filteredName.text} </MenuItem>
+                                                    ))}
+
+                                                </Select>
+                                            </div>
+                                            <div className="col-md-1">
+
+                                                <div>
+                                                    <InputLabel id="demo-simple-select-label">P</InputLabel>
+                                                </div>
+
+                                                <Select
+                                                    value={this.state.Ingredients.cerealiers[key].id_ingr}
+                                                    onChange={(e)=>this.handleChange2(e,"cerealiers","nom_Ingr",key)}
+                                                    style={{width:"100%"}}
+
+                                                    labelId="demo-simple-select-label"
+                                                    id="demo-simple-select"
+                                                >
+                                                    {this.state.foodlist.cerealiers.filter(name => (name.text.startsWith('P'))).map(filteredName => (
+                                                        <MenuItem value={ filteredName.value}  data-my-value={filteredName.text}  >{filteredName.text} </MenuItem>
+                                                    ))}
+
+                                                </Select>
+                                            </div>
+                                            <div className="col-md-3">
+
+                                                <div className="text-left">
+                                                    <InputLabel id="demo-simple-select-label">Q-R-S-T-U-V</InputLabel>
+                                                </div>
+
+                                                <Select
+                                                    placeholder={""}
+                                                    value={this.state.Ingredients.cerealiers[key].id_ingr}
+                                                    onChange={(e)=>this.handleChange2(e,"cerealiers","nom_Ingr",key)}
+                                                    style={{width:"100%"}}
+
+                                                    labelId="demo-simple-select-label"
+                                                    id="demo-simple-select"
+                                                >
+                                                    {this.state.foodlist.cerealiers.filter(name => (name.text.startsWith('Q')
+                                                        ||name.text.startsWith('R')||name.text.startsWith('S')||name.text.startsWith('T')||name.text.startsWith('U')
+                                                        ||name.text.startsWith('V'))).map(filteredName => (
+                                                        <MenuItem value={filteredName.value}  data-my-value={filteredName.text}  >{filteredName.text} </MenuItem>
+                                                    ))}
+
+                                                </Select>
+                                            </div>
 
 
 
 
 
+                                        </div>
                                     </div>
+                                    <div className="col-md-2">
+
+
+
+
+                                        <div>
+                                            <InputLabel id="demo-simple-select-label">Grammages correspondant</InputLabel>
+                                        </div>
+
+                                        <Select
+                                            value={this.state.Ingredients.cerealiers[key].dose_Ingre}
+                                            onChange={(e)=>this.handleChange2(e,"cerealiers","dose_Ingre",key)}
+                                            style={{width:"100%"}}
+                                            labelId="demo-simple-select-label"
+                                            id="demo-simple-select"
+                                            displayEmpty={false}
+                                        >
+                                            <ListSubheader style={{fontWeight :"bold"}}>cueillère à café	5 grammes </ListSubheader>
+                                            <MenuItem value={5}>1 cc </MenuItem>
+                                            <MenuItem value={10}>2 cc</MenuItem>
+                                            <MenuItem value={15}>3 cc  </MenuItem>
+                                            <MenuItem value={20}>4 cc</MenuItem>
+                                            <MenuItem value={25}>5 cc </MenuItem>
+                                            <ListSubheader style={{fontWeight :"bold"}}>cuillere à soupe	15 grammes </ListSubheader>
+                                            <MenuItem value={15}>1 cs </MenuItem>
+                                            <MenuItem value={30}>2 cs</MenuItem>
+                                            <MenuItem value={45}>3 cs </MenuItem>
+                                            <MenuItem value={60}>4 cs</MenuItem>
+                                            <MenuItem value={75}>5 cs </MenuItem>
+                                            <ListSubheader style={{fontWeight :"bold"}}>Une tasse	115 grammes </ListSubheader>
+                                            <MenuItem value={115}>1 t </MenuItem>
+                                            <MenuItem value={230}>2 t</MenuItem>
+                                            <MenuItem value={345}>3 t</MenuItem>
+                                            <MenuItem value={460}>4 t</MenuItem>
+                                            <MenuItem value={575}>5 t</MenuItem>
+                                            <ListSubheader style={{fontWeight :"bold"}}>Décilitre ( 100 gr environ )	100 grammes</ListSubheader>
+                                            <MenuItem value={100}>1 dc</MenuItem>
+                                            <MenuItem value={200}>2 dc</MenuItem>
+                                            <MenuItem value={300}>3 dc</MenuItem>
+                                            <MenuItem value={400}>4 dc</MenuItem>
+                                            <MenuItem value={500}>5 dc</MenuItem>
+                                            <ListSubheader style={{fontWeight :"bold"}}>Nombres</ListSubheader>
+                                            <MenuItem value={1}>1</MenuItem>
+                                            <MenuItem value={2}>2</MenuItem>
+                                            <MenuItem value={3}>3</MenuItem>
+                                            <MenuItem value={4}>4</MenuItem>
+                                            <MenuItem value={5}>5</MenuItem>
+
+
+                                        </Select>
+                                    </div>
+
+
+
+
+
+
                                 </div>
-                            <div className="col-md-3">
-                                <div>
-                                    <InputLabel id="demo-simple-select-label">Plats</InputLabel>
+                            ))}
+
+                            <div className="col-md-1">
+                                <img src={plus} style={{width:"40%" ,cursor:"pointer"}} onClick={()=>{this.addItem("cerealiers")}}/>
+                            </div>
+
+                            <h5 style={{color:"blue"}}> Produits Laitiers </h5>
+
+                            {this.state.Ingredients.laitiers.map((item,key)=>(
+                                <div className="row mb-5 ">
+                                    <div className="col-md-10 ">
+                                        <div className="row align-items-center justify-content-start">
+
+                                            <div className="col-md-auto">
+                                                <text>{key +1})</text>
+
+                                            </div>
+                                            <div className="col-md-3">
+
+                                                <Dropdown
+
+                                                    name="legumes"
+
+                                                    placeholder='Search laitiers'
+                                                    value={this.state.Ingredients.laitiers[key].id_ingr}
+                                                    onChange={(e,data)=>this.dropdownHangleChange(data,e,"laitiers","nom_Ingr",key)}
+                                                    fluid
+                                                    search
+                                                    selection
+                                                    options={laitiers}
+                                                />
+                                            </div>
+                                            <div className="col-md-1">
+
+                                                <div>
+                                                    <InputLabel id="demo-simple-select-label" >A-B</InputLabel>
+                                                </div>
+
+                                                <Select
+                                                    value={this.state.Ingredients.laitiers[key].id_ingr}
+                                                    onChange={(e)=>this.handleChange2(e,"laitiers","nom_Ingr",key)}
+                                                    style={{width:"100%"}}
+
+                                                    labelId="demo-simple-select-label"
+                                                    id="demo-simple-select"
+                                                >
+                                                    {this.state.foodlist.laitiers.filter(name => (name.text.startsWith('A')||name.text.startsWith('B'))).map(filteredName => (
+                                                        <MenuItem value={filteredName.value}  data-my-value={filteredName.text}  >{filteredName.text} </MenuItem>
+                                                    ))}
+
+                                                </Select>
+
+
+                                            </div>
+                                            <div className="col-md-1">
+
+                                                <div>
+                                                    <InputLabel id="demo-simple-select-label">C-D-E</InputLabel>
+                                                </div>
+
+                                                <Select
+                                                    value={this.state.Ingredients.laitiers[key].id_ingr}
+                                                    onChange={(e)=>this.handleChange2(e,"laitiers","nom_Ingr",key)}
+                                                    style={{width:"100%"}}
+
+                                                    labelId="demo-simple-select-label"
+                                                    id="demo-simple-select"
+                                                >
+                                                    {this.state.foodlist.laitiers.filter(name => (name.text.startsWith('C')
+                                                        ||name.text.startsWith('D')||name.text.startsWith('E'))).map(filteredName => (
+                                                        <MenuItem value={filteredName.value}  data-my-value={filteredName.text}  >{filteredName.text} </MenuItem>
+                                                    ))}
+
+                                                </Select>
+                                            </div>
+                                            <div className="col-md-1">
+
+                                                <div>
+                                                    <InputLabel id="demo-simple-select-label">F</InputLabel>
+                                                </div>
+
+                                                <Select
+                                                    value={this.state.Ingredients.laitiers[key].id_ingr}
+                                                    onChange={(e)=>this.handleChange2(e,"laitiers","nom_Ingr",key)}
+                                                    style={{width:"100%"}}
+
+                                                    labelId="demo-simple-select-label"
+                                                    id="demo-simple-select"
+                                                >
+                                                    {this.state.foodlist.laitiers.filter(name => (name.text.startsWith('F'))).map(filteredName => (
+                                                        <MenuItem value={filteredName.value}  data-my-value={filteredName.text}  >{filteredName.text} </MenuItem>
+                                                    ))}
+
+                                                </Select>
+                                            </div>
+                                            <div className="col-md-1">
+
+                                                <div className="text-left">
+                                                    <InputLabel id="demo-simple-select-label">G-I-L</InputLabel>
+                                                </div>
+
+                                                <Select
+                                                    placeholder={""}
+                                                    value={this.state.Ingredients.laitiers[key].id_ingr}
+                                                    onChange={(e)=>this.handleChange2(e,"laitiers","nom_Ingr",key)}
+                                                    style={{width:"100%"}}
+
+                                                    labelId="demo-simple-select-label"
+                                                    id="demo-simple-select"
+                                                >
+                                                    {this.state.foodlist.laitiers.filter(name => (name.text.startsWith('G')
+                                                        ||name.text.startsWith('I')||name.text.startsWith('L'))).map(filteredName => (
+                                                        <MenuItem value={filteredName.value}  data-my-value={filteredName.text}  >{filteredName.text} </MenuItem>
+                                                    ))}
+
+                                                </Select>
+                                            </div>
+                                            <div className="col-md-1">
+
+                                                <div className="text-left">
+                                                    <InputLabel id="demo-simple-select-label">M-P</InputLabel>
+                                                </div>
+
+                                                <Select
+                                                    placeholder={""}
+                                                    value={this.state.Ingredients.laitiers[key].id_ingr}
+                                                    onChange={(e)=>this.handleChange2(e,"laitiers","nom_Ingr",key)}
+                                                    style={{width:"100%"}}
+
+                                                    labelId="demo-simple-select-label"
+                                                    id="demo-simple-select"
+                                                >
+                                                    {this.state.foodlist.laitiers.filter(name => (name.text.startsWith('M')
+                                                        ||name.text.startsWith('P'))).map(filteredName => (
+                                                        <MenuItem value={filteredName.value}  data-my-value={filteredName.text}  >{filteredName.text} </MenuItem>
+                                                    ))}
+
+                                                </Select>
+                                            </div>
+                                            <div className="col-md-1">
+
+                                                <div className="text-left">
+                                                    <InputLabel id="demo-simple-select-label">R-S-T</InputLabel>
+                                                </div>
+
+                                                <Select
+                                                    placeholder={""}
+                                                    value={this.state.Ingredients.laitiers[key].id_ingr}
+                                                    onChange={(e)=>this.handleChange2(e,"laitiers","nom_Ingr",key)}
+                                                    style={{width:"100%"}}
+
+                                                    labelId="demo-simple-select-label"
+                                                    id="demo-simple-select"
+                                                >
+                                                    {this.state.foodlist.laitiers.filter(name => (name.text.startsWith('R')
+                                                        ||name.text.startsWith('S')||name.text.startsWith('T'))).map(filteredName => (
+                                                        <MenuItem value={filteredName.value}  data-my-value={filteredName.text}  >{filteredName.text} </MenuItem>
+                                                    ))}
+
+                                                </Select>
+                                            </div>
+                                            <div className="col-md-1">
+
+                                                <div className="text-left">
+                                                    <InputLabel id="demo-simple-select-label">V-Y</InputLabel>
+                                                </div>
+
+                                                <Select
+                                                    placeholder={""}
+                                                    value={this.state.Ingredients.laitiers[key].id_ingr}
+                                                    onChange={(e)=>this.handleChange2(e,"laitiers","nom_Ingr",key)}
+                                                    style={{width:"100%"}}
+
+                                                    labelId="demo-simple-select-label"
+                                                    id="demo-simple-select"
+                                                >
+                                                    {this.state.foodlist.laitiers.filter(name => (name.text.startsWith('V')
+                                                        ||name.text.startsWith('Y'))).map(filteredName => (
+                                                        <MenuItem value={filteredName.value}  data-my-value={filteredName.text}  >{filteredName.text} </MenuItem>
+                                                    ))}
+
+                                                </Select>
+                                            </div>
+
+
+
+
+
+
+                                        </div>
+                                    </div>
+                                    <div className="col-md-2">
+
+
+
+
+                                        <div>
+                                            <InputLabel id="demo-simple-select-label">Grammages correspondant</InputLabel>
+                                        </div>
+
+                                        <Select
+                                            value={this.state.Ingredients.laitiers[key].dose_Ingre}
+                                            onChange={(e)=>this.handleChange2(e,"laitiers","dose_Ingre",key)}
+                                            style={{width:"100%"}}
+                                            labelId="demo-simple-select-label"
+                                            id="demo-simple-select"
+                                            displayEmpty={false}
+                                        >
+                                            <ListSubheader style={{fontWeight :"bold"}}>cueillère à café	5 grammes </ListSubheader>
+                                            <MenuItem value={5}>1 cc </MenuItem>
+                                            <MenuItem value={10}>2 cc</MenuItem>
+                                            <MenuItem value={15}>3 cc  </MenuItem>
+                                            <MenuItem value={20}>4 cc</MenuItem>
+                                            <MenuItem value={25}>5 cc </MenuItem>
+                                            <ListSubheader style={{fontWeight :"bold"}}>cuillere à soupe	15 grammes </ListSubheader>
+                                            <MenuItem value={15}>1 cs </MenuItem>
+                                            <MenuItem value={30}>2 cs</MenuItem>
+                                            <MenuItem value={45}>3 cs </MenuItem>
+                                            <MenuItem value={60}>4 cs</MenuItem>
+                                            <MenuItem value={75}>5 cs </MenuItem>
+                                            <ListSubheader style={{fontWeight :"bold"}}>Une tasse	115 grammes </ListSubheader>
+                                            <MenuItem value={115}>1 t </MenuItem>
+                                            <MenuItem value={230}>2 t</MenuItem>
+                                            <MenuItem value={345}>3 t</MenuItem>
+                                            <MenuItem value={460}>4 t</MenuItem>
+                                            <MenuItem value={575}>5 t</MenuItem>
+                                            <ListSubheader style={{fontWeight :"bold"}}>Décilitre ( 100 gr environ )	100 grammes</ListSubheader>
+                                            <MenuItem value={100}>1 dc</MenuItem>
+                                            <MenuItem value={200}>2 dc</MenuItem>
+                                            <MenuItem value={300}>3 dc</MenuItem>
+                                            <MenuItem value={400}>4 dc</MenuItem>
+                                            <MenuItem value={500}>5 dc</MenuItem>
+                                            <ListSubheader style={{fontWeight :"bold"}}>Nombres</ListSubheader>
+                                            <MenuItem value={1}>1</MenuItem>
+                                            <MenuItem value={2}>2</MenuItem>
+                                            <MenuItem value={3}>3</MenuItem>
+                                            <MenuItem value={4}>4</MenuItem>
+                                            <MenuItem value={5}>5</MenuItem>
+
+
+                                        </Select>
+                                    </div>
+
+
+
+
+
+
                                 </div>
+                            ))}
 
-                                <Select
-                                    value={this.state.data.plat}
-                                    onChange={(e)=>this.handleChange(e,"plat")}
-                                    style={{width:"100%"}}
-                                    labelId="demo-simple-select-label"
-                                    id="demo-simple-select"
-                                >
-                                    <MenuItem value={"Petit déjeuner"}>Petit déjeuner </MenuItem>
-                                    <MenuItem value={"Entrées"}>Entrées</MenuItem>
-                                    <MenuItem value={"Plats principal"}>Plats principal</MenuItem>
-                                    <MenuItem value={"Desserts"}>Desserts</MenuItem>
-                                    <MenuItem value={"Apéritif dînatoire"}>Apéritif dînatoire </MenuItem>
-                                    <MenuItem value={"Snacks"}>Snacks</MenuItem>
-                                    <MenuItem value={"Soupes"}>Soupes</MenuItem>
-                                    <MenuItem value={"Sauces"}>Sauces</MenuItem>
-                                    <MenuItem value={"Shakes & smoothie"}>Shakes & Smoothie</MenuItem>
-                                </Select>
+                            <div className="col-md-1">
+                                <img src={plus} style={{width:"40%" ,cursor:"pointer"}} onClick={()=>{this.addItem('laitiers')}}/>
                             </div>
 
-                        </div>
+                            <h5 style={{color:"blue"}}> Viande</h5>
 
-                        <div className="row justify-content-around mt-3">
+                            {this.state.Ingredients.viandes.map((item,key)=>(
+                                <div className="row mb-5 ">
+                                    <div className="col-md-10 ">
+                                        <div className="row align-items-center justify-content-start">
+
+                                            <div className="col-md-auto">
+                                                <text>{key +1})</text>
+
+                                            </div>
+                                            <div className="col-md-3">
+
+                                                <Dropdown
+
+                                                    name="legumes"
+
+                                                    placeholder='Search viande'
+                                                    value={this.state.Ingredients.viandes[key].id_ingr}
+                                                    fluid
+                                                    search
+                                                    selection
+                                                    onChange={(e,data)=>this.dropdownHangleChange(data,e,"viandes","nom_Ingr",key)}
+                                                    options={viandes}
+                                                />
+                                            </div>
+                                            <div className="col-md-1">
+                                                .
+                                                <div>
+                                                    <InputLabel id="demo-simple-select-label" >A-B</InputLabel>
+                                                </div>
+
+                                                <Select
+                                                    value={this.state.Ingredients.viandes[key].id_ingr}
+                                                    onChange={(e)=>this.handleChange2(e,"viandes","nom_Ingr",key)}
+                                                    style={{width:"100%"}}
+
+                                                    labelId="demo-simple-select-label"
+                                                    id="demo-simple-select"
+                                                >
+                                                    {this.state.foodlist.viande.filter(name => (name.text.startsWith('A')||name.text.startsWith('B'))).map(filteredName => (
+                                                        <MenuItem value={filteredName.value}  data-my-value={filteredName.text}  >{filteredName.text} </MenuItem>
+                                                    ))}
+
+                                                </Select>
 
 
-                            <div className="col-md-3">
-                                <div>
-                                    <InputLabel id="demo-simple-select-label">Tendances</InputLabel>
+                                            </div>
+                                            <div className="col-md-1">
+
+                                                <div>
+                                                    <InputLabel id="demo-simple-select-label">C-D-E</InputLabel>
+                                                </div>
+
+                                                <Select
+                                                    value={this.state.Ingredients.viandes[key].id_ingr}
+                                                    onChange={(e)=>this.handleChange2(e,"viandes","nom_Ingr",key)}
+                                                    style={{width:"100%"}}
+
+                                                    labelId="demo-simple-select-label"
+                                                    id="demo-simple-select"
+                                                >
+                                                    {this.state.foodlist.viande.filter(name => (name.text.startsWith('C')
+                                                        ||name.text.startsWith('D')||name.text.startsWith('E'))).map(filteredName => (
+                                                        <MenuItem value={filteredName.value}  data-my-value={filteredName.text}  >{filteredName.text} </MenuItem>
+                                                    ))}
+
+                                                </Select>
+                                            </div>
+                                            <div className="col-md-1">
+
+                                                <div>
+                                                    <InputLabel id="demo-simple-select-label">F</InputLabel>
+                                                </div>
+
+                                                <Select
+                                                    value={this.state.Ingredients.viandes[key].id_ingr}
+                                                    onChange={(e)=>this.handleChange2(e,"viandes","nom_Ingr",key)}
+                                                    style={{width:"100%"}}
+
+                                                    labelId="demo-simple-select-label"
+                                                    id="demo-simple-select"
+                                                >
+                                                    {this.state.foodlist.viande.filter(name => (name.text.startsWith('F'))).map(filteredName => (
+                                                        <MenuItem value={filteredName.value}  data-my-value={filteredName.text}  >{filteredName.text} </MenuItem>
+                                                    ))}
+
+                                                </Select>
+                                            </div>
+                                            <div className="col-md-1">
+
+                                                <div className="text-left">
+                                                    <InputLabel id="demo-simple-select-label">G-I-L</InputLabel>
+                                                </div>
+
+                                                <Select
+                                                    placeholder={""}
+                                                    value={this.state.Ingredients.viandes[key].id_ingr}
+                                                    onChange={(e)=>this.handleChange2(e,"viandes","nom_Ingr",key)}
+                                                    style={{width:"100%"}}
+
+                                                    labelId="demo-simple-select-label"
+                                                    id="demo-simple-select"
+                                                >
+                                                    {this.state.foodlist.viande.filter(name => (name.text.startsWith('G')
+                                                        ||name.text.startsWith('I')||name.text.startsWith('L'))).map(filteredName => (
+                                                        <MenuItem value={filteredName.value}  data-my-value={filteredName.text}  >{filteredName.text} </MenuItem>
+                                                    ))}
+
+                                                </Select>
+                                            </div>
+                                            <div className="col-md-1">
+
+                                                <div className="text-left">
+                                                    <InputLabel id="demo-simple-select-label">M-P</InputLabel>
+                                                </div>
+
+                                                <Select
+                                                    placeholder={""}
+                                                    value={this.state.Ingredients.viandes[key].id_ingr}
+                                                    onChange={(e)=>this.handleChange2(e,"viandes","nom_Ingr",key)}
+                                                    style={{width:"100%"}}
+
+                                                    labelId="demo-simple-select-label"
+                                                    id="demo-simple-select"
+                                                >
+                                                    {this.state.foodlist.viande.filter(name => (name.text.startsWith('M')
+                                                        ||name.text.startsWith('P'))).map(filteredName => (
+                                                        <MenuItem value={filteredName.value}  data-my-value={filteredName.text}  >{filteredName.text} </MenuItem>
+                                                    ))}
+
+                                                </Select>
+                                            </div>
+                                            <div className="col-md-1">
+
+                                                <div className="text-left">
+                                                    <InputLabel id="demo-simple-select-label">R-S-T</InputLabel>
+                                                </div>
+
+                                                <Select
+                                                    placeholder={""}
+                                                    value={this.state.Ingredients.viandes[key].id_ingr}
+                                                    onChange={(e)=>this.handleChange2(e,"viandes","nom_Ingr",key)}
+                                                    style={{width:"100%"}}
+
+                                                    labelId="demo-simple-select-label"
+                                                    id="demo-simple-select"
+                                                >
+                                                    {this.state.foodlist.viande.filter(name => (name.text.startsWith('R')
+                                                        ||name.text.startsWith('S')||name.text.startsWith('T'))).map(filteredName => (
+                                                        <MenuItem value={filteredName.value}  data-my-value={filteredName.text}  >{filteredName.text} </MenuItem>
+                                                    ))}
+
+                                                </Select>
+                                            </div>
+                                            <div className="col-md-1">
+
+                                                <div className="text-left">
+                                                    <InputLabel id="demo-simple-select-label">V-Y</InputLabel>
+                                                </div>
+
+                                                <Select
+                                                    placeholder={""}
+                                                    value={this.state.Ingredients.viandes[key].id_ingr}
+                                                    onChange={(e)=>this.handleChange2(e,"viandes","nom_Ingr",key)}
+                                                    style={{width:"100%"}}
+
+                                                    labelId="demo-simple-select-label"
+                                                    id="demo-simple-select"
+                                                >
+                                                    {this.state.foodlist.viande.filter(name => (name.text.startsWith('V')
+                                                        ||name.text.startsWith('Y'))).map(filteredName => (
+                                                        <MenuItem value={filteredName.value}  data-my-value={filteredName.text}  >{filteredName.text} </MenuItem>
+                                                    ))}
+
+                                                </Select>
+                                            </div>
+
+
+
+
+
+
+                                        </div>
+                                    </div>
+                                    <div className="col-md-2">
+
+
+
+
+                                        <div>
+                                            <InputLabel id="demo-simple-select-label">Grammages correspondant</InputLabel>
+                                        </div>
+
+                                        <Select
+                                            value={this.state.Ingredients.viandes[key].dose_Ingre}
+                                            onChange={(e)=>this.handleChange2(e,"viandes","dose_Ingre",key)}
+                                            style={{width:"100%"}}
+                                            labelId="demo-simple-select-label"
+                                            id="demo-simple-select"
+                                            displayEmpty={false}
+                                        >
+                                            <ListSubheader style={{fontWeight :"bold"}}>cueillère à café	5 grammes </ListSubheader>
+                                            <MenuItem value={5}>1 cc </MenuItem>
+                                            <MenuItem value={10}>2 cc</MenuItem>
+                                            <MenuItem value={15}>3 cc  </MenuItem>
+                                            <MenuItem value={20}>4 cc</MenuItem>
+                                            <MenuItem value={25}>5 cc </MenuItem>
+                                            <ListSubheader style={{fontWeight :"bold"}}>cuillere à soupe	15 grammes </ListSubheader>
+                                            <MenuItem value={15}>1 cs </MenuItem>
+                                            <MenuItem value={30}>2 cs</MenuItem>
+                                            <MenuItem value={45}>3 cs </MenuItem>
+                                            <MenuItem value={60}>4 cs</MenuItem>
+                                            <MenuItem value={75}>5 cs </MenuItem>
+                                            <ListSubheader style={{fontWeight :"bold"}}>Une tasse	115 grammes </ListSubheader>
+                                            <MenuItem value={115}>1 t </MenuItem>
+                                            <MenuItem value={230}>2 t</MenuItem>
+                                            <MenuItem value={345}>3 t</MenuItem>
+                                            <MenuItem value={460}>4 t</MenuItem>
+                                            <MenuItem value={575}>5 t</MenuItem>
+                                            <ListSubheader style={{fontWeight :"bold"}}>Décilitre ( 100 gr environ )	100 grammes</ListSubheader>
+                                            <MenuItem value={100}>1 dc</MenuItem>
+                                            <MenuItem value={200}>2 dc</MenuItem>
+                                            <MenuItem value={300}>3 dc</MenuItem>
+                                            <MenuItem value={400}>4 dc</MenuItem>
+                                            <MenuItem value={500}>5 dc</MenuItem>
+                                            <ListSubheader style={{fontWeight :"bold"}}>Nombres</ListSubheader>
+                                            <MenuItem value={1}>1</MenuItem>
+                                            <MenuItem value={2}>2</MenuItem>
+                                            <MenuItem value={3}>3</MenuItem>
+                                            <MenuItem value={4}>4</MenuItem>
+                                            <MenuItem value={5}>5</MenuItem>
+
+
+                                        </Select>
+                                    </div>
+
+
+
+
+
+
                                 </div>
+                            ))}
 
-                                <Select
-                                    value={this.state.data.Tendances}
-                                    onChange={(e)=>this.handleChange(e,"Tendances")}
-                                    style={{width:"100%"}}
-                                    labelId="demo-simple-select-label"
-                                    id="demo-simple-select"
-                                >
-                                    <MenuItem value={"Express"}> Express </MenuItem>
-                                    <MenuItem value={"Sans gluten"}>Sans gluten</MenuItem>
-                                    <MenuItem value={"Végétariennes"}>Végétariennes</MenuItem>
-                                    <MenuItem value={"Compatibles phase Starter"}>Compatibles phase Starter</MenuItem>
-                                    <MenuItem value={"Sans Cuisson"}>Sans Cuisson</MenuItem>
-
-                                </Select>
+                            <div className="col-md-1">
+                                <img src={plus} style={{width:"40%" ,cursor:"pointer"}} onClick={()=>{this.addItem('viandes')}}/>
                             </div>
-                            <div className="col-md-3">
 
-                            </div>
 
                         </div>
 
+                        }
 
 
 
 
 
-                        <div className="row mt-5 justify-content-center ">
-                            <div className="col-auto text-center">
-                            <InputLabel>Ingredients : </InputLabel>
-                            </div>
-                            <div className="col-md-7">
-
-                                <textarea value={this.state.data.Ingredients}
-                                          onChange={(e)=>this.handleChange(e,"Ingredients")} style={{width:"100%",height:"200px"}}></textarea>
-                            </div>
-
-                        </div>
-                        <div className="row mt-5 justify-content-center ">
-                            <div className="col-auto text-center">
-                                <InputLabel>Preparations : </InputLabel>
-                            </div>
-                            <div className="col-md-7">
-
-                                <textarea value={this.state.data.Preparation}
-                                          onChange={(e)=>this.handleChange(e,"Preparation")} style={{width:"100%",height:"200px"}}></textarea>
-                            </div>
-
-                        </div>
-
-                        <div className="row mt-5 justify-content-center align-items-center ">
+                        <div className="row  justify-content-center align-items-center " style={{marginTop:"10%"}}>
                             <div className="col-md-2 text-center">
-                                <InputLabel>Upload photo : </InputLabel>
+                                <InputLabel>Upload list_photo : </InputLabel>
                             </div>
                             <div className="col-md-5">
 
@@ -539,7 +1649,8 @@ componentDidMount() {
                                         variant="contained"
                                         component="label"
                                 >
-                                    Upload photo
+                                    Upload list_photo
+
                                     <input
                                         onChange={(e)=>this.uploadImage(e )}
 
@@ -547,6 +1658,8 @@ componentDidMount() {
                                         type="file"
                                         style={{ display: "none" }}
                                     />
+
+
                                 </Button>
 
 
@@ -554,11 +1667,11 @@ componentDidMount() {
                             </div>
                             <div className="col-md-3">
 
-                                {(this.state.data.photo!=="" && this.state.data.photo!=null) &&
+                                {(this.state.data.list_photo!=="" && this.state.data.list_photo!=null) &&
 
 
 
-                                  <img alt="" src={this.state.data.photo} style={{width:200,height:200}}/>}
+                                  <img alt="" src={this.state.data.list_photo} style={{width:200,height:200}}/>}
 
 
 
@@ -567,7 +1680,7 @@ componentDidMount() {
                         </div>
                         <div className="row mt-5 justify-content-center align-items-center ">
                             <div className="col-md-2 text-center">
-                                <InputLabel>Upload video : </InputLabel>
+                                <InputLabel>Upload list_video : </InputLabel>
                             </div>
                             <div className="col-md-5">
 
@@ -576,9 +1689,9 @@ componentDidMount() {
                                     variant="contained"
                                     component="label"
                                 >
-                                    Upload video
+                                    Upload list_video
                                     <input
-                                        onChange={(e)=>this.uploadVideo(e)}
+                                        onChange={(e)=>this.uploadlist_video(e)}
 
 
                                         type="file"
@@ -591,12 +1704,12 @@ componentDidMount() {
                             </div>
                             <div className="col-md-3">
 
-                               {(this.state.data.video!==""&&this.state.data.video!=null) &&
+                               {(this.state.data.list_video!==""&&this.state.data.list_video!=null) &&
                                <Player
 
                                    playsInline
                                    poster="/assets/poster.png"
-                                   src={this.state.data.video}
+                                   src={this.state.data.list_video}
                                />
                                }
 

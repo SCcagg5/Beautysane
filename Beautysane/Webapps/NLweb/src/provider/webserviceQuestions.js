@@ -1,8 +1,8 @@
 import calendarService from "./calendarService";
 
-const endpoint = "http://localhost:3001/api/";
+const endpoint = process.env.REACT_APP_endpoint;
 
-let recetteService ={
+let QuestionService ={
 
     loadHeaders() {
         let headers = new Headers();
@@ -28,7 +28,7 @@ let recetteService ={
             console.log(error);
         });
     },
-    CreateRecette(data){
+    CreateQuestions(data){
         let formBody = [];
         for (let property in data) {
             let encodedKey = encodeURIComponent(property);
@@ -36,7 +36,55 @@ let recetteService ={
             formBody.push(encodedKey + "=" + encodedValue);
         }
         formBody = formBody.join("&");
-        return fetch(endpoint+'recetteCreate', {
+        return fetch(endpoint+'questionsCreate', {
+            method: 'POST',
+            headers:this.loadHeaders(),
+            body:formBody
+        }).then(response => response.json()).catch(error => {
+            console.log(error);
+        });
+    },
+    CreateMiniceur(data){
+        let formBody = [];
+        for (let property in data) {
+            let encodedKey = encodeURIComponent(property);
+            let encodedValue = encodeURIComponent(data[property]);
+            formBody.push(encodedKey + "=" + encodedValue);
+        }
+        formBody = formBody.join("&");
+        return fetch(endpoint+'miniceurCreate', {
+            method: 'POST',
+            headers:this.loadHeaders(),
+            body:formBody
+        }).then(response => response.json()).catch(error => {
+            console.log(error);
+        });
+    },
+    CreateSport(data){
+        let formBody = [];
+        for (let property in data) {
+            let encodedKey = encodeURIComponent(property);
+            let encodedValue = encodeURIComponent(data[property]);
+            formBody.push(encodedKey + "=" + encodedValue);
+        }
+        formBody = formBody.join("&");
+        return fetch(endpoint+'sportCreate', {
+            method: 'POST',
+            headers:this.loadHeaders(),
+            body:formBody
+        }).then(response => response.json()).catch(error => {
+            console.log(error);
+        });
+    },
+    CreateBienEtre(data){
+        let formBody = [];
+        for (let property in data) {
+            let encodedKey = encodeURIComponent(property);
+            let encodedValue = encodeURIComponent(data[property]);
+            formBody.push(encodedKey + "=" + encodedValue);
+        }
+        formBody = formBody.join("&");
+        return fetch(endpoint+'bienetreCreate', {
             method: 'POST',
             headers:this.loadHeaders(),
             body:formBody
@@ -75,4 +123,4 @@ let recetteService ={
 }
 
 
-export default recetteService;
+export default QuestionService;

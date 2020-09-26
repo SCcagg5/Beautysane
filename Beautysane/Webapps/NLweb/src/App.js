@@ -7,6 +7,7 @@ import "./assets/css/fa.css"
 import "./assets/css/fonts.css"
 import './assets/scss/DefaultTheme.scss';
 import './App.css'
+import 'semantic-ui-css/semantic.min.css'
 
 
 
@@ -23,7 +24,12 @@ import listeRecette from "./pages/listRecette/listeRecette";
 import recette from "./pages/listRecette/recette";
 import questions from "./pages/questions/questions";
 import addRecette from "./pages/addRecette/addRecette";
+import  recetteID from "./pages/listRecette/recetteID";
+import  dashboard from "./pages/Dashboard/dashboard";
+import bondyQuestions from "./pages/bondyQuestions/questions"
 import  authentification from "./pages/auth/authentification";
+import  authentificationTo from "./pages/auth/authentificationTo";
+
 
 
 
@@ -63,9 +69,16 @@ class App extends Component{
 
             <Route exact path="/" component={listeRecette}/>
             <Route exact path="/questions" component={questions}/>
+            <Route exact path="/bondyquestions" component={bondyQuestions}/>
             <Route exact path="/addRecette" component={addRecette}/>
-            <Route exact path="/recette/:id" component={recette}/>
+            <Route exact path="/recettes/:id" component={recette}/>
+            <Route exact path="/recette/:id" component={recetteID}/>
+            <Route exact path="/dashboard/:id" component={dashboard}/>
+
+
             <Route exact path="/login" component={authentification}/>
+            <Route exact path="/login/:to" component={authentificationTo}/>
+
 
 
 

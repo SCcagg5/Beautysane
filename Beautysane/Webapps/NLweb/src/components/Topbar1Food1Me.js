@@ -2,8 +2,8 @@ import React, {Component} from "react";
 import {Link} from 'react-router-dom';
 import { Container} from 'reactstrap';
 
-import logoSm from '../assets/images/beautysane_LOGO_vert.png';
-import logo from '../assets/images/beautysane_LOGO_vert.png';
+import logoSm from '../assets/images/logos/logo1food1me.png';
+import logo from '../assets/images/logos/logo1food1me.png';
 
 
 
@@ -60,22 +60,8 @@ class TopbarRecettes extends Component {
                                 </div>
                             </div>
 
-                            <div className="col-md-1">
-                                <h3>Recettes</h3>
-                            </div>
-                            <div className="col-md-1">
-                                <h3>Workout</h3>
-                            </div>
-                            <div className="col-md-1">
-                                <h3>Article</h3>
-                            </div>
-                            <div className="col-md-1">
-                                <h3 style={{cursor:"pointer"}} onClick={()=>this.props.history.push('/questions')}>BodyCheck</h3>
-                            </div>
-                            <div>
-                                <button type="button" className="btn btn-success" style={{backgroundColor:"#00ba4c",color:"white"}}>BOUTIQUE</button>
 
-                            </div>
+
                             <div className="col-md-2">
                                 <li className="d-none d-sm-block">
                                     <form className="app-search">
@@ -114,7 +100,7 @@ class TopbarRecettes extends Component {
                 <div className="navbar-custom ">
                     <Container fluid className="h-100" >
 
-                        <div className="row h-100 align-items-center justify-content-around">
+                        <div className="row h-100 align-items-center justify-content-between">
                             <div className="col-md-2">
                                 <div  className="logo-box">
                                     <Link to="/" className="logo text-center">
@@ -128,23 +114,7 @@ class TopbarRecettes extends Component {
                                 </div>
                             </div>
 
-                            <div className="col-md-1">
-                                <text style={{fontWeight: "bold" , fontSize:"1.8vw",color:"black" }}>Recette</text>
-                            </div>
-                            <div className="col-md-1">
-                                <text style={{fontWeight: "bold" , fontSize:"1.8vw",color:"black" }}>Workout</text>
 
-                            </div>
-                            <div className="col-md-1">
-                                <text style={{fontWeight: "bold" , fontSize:"1.8vw",color:"black" }}>Article</text>
-                            </div>
-                            <div className="col-md-1">
-                                <h3 style={{fontWeight: "bold" , fontSize:"1.8vw",color:"black" ,cursor:"pointer"}} onClick={()=>this.props.history.push('/questions')}>BodyCheck</h3>
-                            </div>
-                            <div className="col-md-1">
-                                <button type="button" className="btn btn-success" style={{backgroundColor:"#00ba4c",color:"white"}}>BOUTIQUE</button>
-
-                            </div>
                             <div className="col-md-2">
                                 <li className="d-none d-sm-block">
                                     <form className="app-search">

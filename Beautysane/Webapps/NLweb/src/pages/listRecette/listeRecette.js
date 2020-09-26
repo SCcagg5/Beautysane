@@ -8,7 +8,7 @@ import  Loader from "../../components/Loader"
 import magazine from "../../assets/images/magazine.jpg"
 import hourglass from "../../assets/images/hourglass.svg"
 import chef_hat from "../../assets/images/chef_hat.svg"
-
+import  recetteService from "../../provider/webservice"
 import ClampLines from 'react-clamp-lines';
 
 
@@ -43,23 +43,16 @@ class listeRecette extends Component {
 
     componentDidMount() {
 
-        firebase.database().ref("recettes/").on("value", (snapshot) => {
-            let recettes = snapshot.val();
+        localStorage.clear()
 
-            let rets =[]
-            for (let i =0 ;i<recettes.length;i++){
 
-                rets.push(recettes[i])
-
-            }
-
-            this.setState(   {recettes:rets})
+       recetteService.getRecettes().then(res => {
+           this.setState({recettes:res})
+       })
 
 
 
 
-
-        })
     }
 
 
@@ -94,10 +87,10 @@ class listeRecette extends Component {
                                         PLATS
                                     </button>
                                     <div className="dropdown-menu">
-                                        <text    className="dropdown-item" onClick={()=>this.props.history.push("/recette/dejeuner")}>Petit déjeuner</text>
+                                        <text    className="dropdown-item" onClick={()=>this.props.history.push("/recettes/dejeuner")}>Petit déjeuner</text>
                                         <text className="dropdown-item" href="#">Entrées,</text>
-                                        <text className="dropdown-item" href="#"onClick={()=>this.props.history.push("/recette/PlatPrincipal")}>Plats principal</text>
-                                        <text className="dropdown-item" href="#"onClick={()=>this.props.history.push("/recette/dessert")}>Desserts</text>
+                                        <text className="dropdown-item" href="#"onClick={()=>this.props.history.push("/recettes/PlatPrincipal")}>Plats principal</text>
+                                        <text className="dropdown-item" href="#"onClick={()=>this.props.history.push("/recettes/dessert")}>Desserts</text>
                                         <text className="dropdown-item" href="#">Apéritif dînatoire</text>
                                         <text className="dropdown-item" href="#">Snacks</text>
                                         <text className="dropdown-item" href="#">Soupes</text>
@@ -168,9 +161,9 @@ class listeRecette extends Component {
                             </div>
 
                         </div>
-                            <div className="col-md-1">
+                            <div className="col-md-auto">
 
-                                <button style={{color:"black",borderColor:"#a6a6a6",width:"100%"}} className="btn btn-secondary dropdown-toggle bg-white" type="button"
+                                <button  style={{color:"black",borderColor:"#a6a6a6",width:"100%"}} className="btn btn-secondary dropdown-toggle bg-white" type="button"
                                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     OCCASION
                                 </button>
@@ -191,7 +184,7 @@ class listeRecette extends Component {
                                 </div>
 
                             </div>
-                            <div className="col-md-1">
+                            <div className="col-md-auto">
 
                                 <button style={{color:"black",borderColor:"#a6a6a6",width:"100%"}} className="btn btn-secondary dropdown-toggle bg-white" type="button"
                                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -217,11 +210,11 @@ class listeRecette extends Component {
                                 {this.state.recettes.map((item,key)=>(
 
 
-                                    <div className="col-md-4 mt-3">
-                                        <div className="card" style={{width:"80%",height:"100%"}}>
-                                            <img alt="Card  cap"  className="card-img-top" src={item.photo} style={{height:"50%"}} />
+                                    <div className="col-md-4 mt-3" style={{cursor:"pointer"}} onClick={()=>{this.props.history.push("/recette/"+item.id_rec)}}>
+                                        <div onClick={()=>{this.props.history.push("/recette/"+item.id_rec)}} className="card" style={{width:"80%",height:"100%"}}>
+                                            <img alt="Card  cap"  className="card-img-top" src={item.list_photo} style={{height:"50%"}} />
                                             <div className="card-body">
-                                                <h5 className="card-title">{item.nomRecette}</h5>
+                                                <h5 className="card-title">{item.list_nomRecette}</h5>
                                                 <div className="row align-items-end">
 
                                                     <div className="col-md-1">
@@ -229,7 +222,7 @@ class listeRecette extends Component {
 
                                                     </div>
                                                     <div>
-                                                        <small>{item.Duree_prepa_repas.toString().toUpperCase()} </small>
+                                                        <small>{item.list_Duree_prepa_repas.toString().toUpperCase()} </small>
 
                                                     </div>
                                                     <div className="col-md-1 ml-2">
@@ -245,7 +238,7 @@ class listeRecette extends Component {
 
                                                 <div>
                                                     <ClampLines
-                                                        text={item.Preparation}
+                                                        text={""}
                                                         id="really-unique-id"
                                                         lines={3}
                                                         ellipsis="..."
@@ -259,7 +252,7 @@ class listeRecette extends Component {
                                             </div>
 
                                             <div className="card-body">
-                                               <text href="#" className="card-link"><u style={{color:"black"  }}>Lire la suite</u></text>
+                                               <text onClick={()=>{this.props.history.push("/recette/"+item.id_rec)}}  href="#" className="card-link"><u style={{color:"black"  }}>Lire la suite</u></text>
 
                                             </div>
                                         </div>

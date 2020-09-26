@@ -1,6 +1,8 @@
-.navRecette {
+.ul {
 
     list-style-type: none;
+    width: 100%;
+    text-align: center;
 
 }
 .ReactStars{
@@ -9,7 +11,10 @@
     margin-right: auto;
     margin-top: 10px;
 }
-.navRecette li {
+.ul li {
+    margin-left: 2%;
+    margin-right: 2%;
+    cursor: pointer;
     display: inline-block;
 
 }
