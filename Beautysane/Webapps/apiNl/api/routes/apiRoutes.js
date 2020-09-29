@@ -12,8 +12,6 @@ module.exports = function (app) {
     app.route('/api/sendNlmMailWithUrl')
         .post(api.sendNLMailWithUrl)
 
-    app.route('/api/recettes')
-        .post(api.getRecettes)
 
     app.route('/api/recettesall')
         .get(api.findAll)
@@ -51,6 +49,8 @@ module.exports = function (app) {
 
     app.route('/api/generateDocRecette/:id')
         .get(api.generateDocRecette)
+    app.route('/api/getfoodlist')
+        .get(api.foodList)
 
 
 

@@ -37,7 +37,7 @@ class Questions extends Component {
 
 sendMail(){
 
-    let dd={
+  /*  let dd={
         emailReciver:"jawher.zairi@sesame.com.tn",
         subject:"bodycheckNL",
         linkUrl :"http://localhost:3001/api/generateDoc",
@@ -55,7 +55,9 @@ sendMail(){
         body:JSON.stringify(dd)
     }).then(response => response.json()).catch(error => {
         console.log(error);
-    })
+    })*/
+
+/*
 
         let user_id = localStorage.getItem('uid')
         let quest = this.state.questions
@@ -143,7 +145,8 @@ sendMail(){
             }
         })
 
-        /*
+
+*/
     fetch(url+'sendNlmMailWithUrl', {
         method: 'post',
         headers: {
@@ -151,11 +154,12 @@ sendMail(){
             'Content-Type': 'application/json'
         },
         body: JSON.stringify(this.state.questions)
-    }).then(function(response) {
-        return response.json();
+    }).then((response)=> {
+        console.log("mail"+response.json())
     })
 
-         */
+
+
 }
 
 

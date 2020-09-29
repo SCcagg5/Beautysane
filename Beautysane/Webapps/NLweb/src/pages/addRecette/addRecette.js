@@ -12,7 +12,7 @@ import  Loader from "../../components/Loader"
 import { withStyles } from '@material-ui/core/styles';
 import ListSubheader from '@material-ui/core/ListSubheader';
 import  recetteService from "../../provider/webservice"
-
+import CircularProgress from '@material-ui/core/CircularProgress';
 import plus from "../../assets/images/icons/plus.svg"
 
 
@@ -32,11 +32,14 @@ const useStyles = withStyles((theme) => ({
         marginTop: theme.spacing(2),
     },
 }));
+
+const url = process.env.REACT_APP_endpoint
 class AddRecette extends Component {
     constructor(props){
         super(props);
         this.state={
             test:45,
+            loadingButton:false,
             data:{
                 list_nomRecette:"",
                 list_Duree_prepa_repas:"",
@@ -93,41 +96,38 @@ class AddRecette extends Component {
 componentDidMount() {
     this.setState({loading1:true})
 
-    fetch('https://ayurws.azurewebsites.net/foodsV2', {
+    fetch(url+'getfoodlist', {
         method: 'GET',
 
     }).then(response => response.json()).then((res)=>{
         console.log(res)
         res.map((item,key)=>{
-            if (item.alim_ssgrp_nom_fr.includes("legume")||item.alim_ssssgrp_nom_fr.includes("legume")||item.alim_grp_nom_fr.includes("legume")){
+            if (item.alim_ssgrp_nom_fr.includes("légumes")||item.alim_ssssgrp_nom_fr.includes("légumes")||item.alim_grp_nom_fr.includes("légumes")){
                 this.state.foodlist.legumes.push({
-                    key:item.itemID,
-                    value:item.itemID,
+                    key:item.alim_code,
+                    value:item.alim_code,
                     text:item.alim_nom_fr,
-                    name:item.alim_nom_fr,
-                    proteines:item.Proteines,
-                    glucides:item.Glucides,
-                    lipides:item.Lipides,
+
                 })
 
             }else if (item.alim_ssgrp_nom_fr.includes("viande")||item.alim_ssssgrp_nom_fr.includes("viande")||item.alim_grp_nom_fr.includes("viande")){
                 this.state.foodlist.viande.push({
-                    key:item.itemID,
-                    value:item.itemID,
+                    key:item.alim_code,
+                    value:item.alim_code,
                     text:item.alim_nom_fr
                 })
 
-            }else if (item.alim_ssgrp_nom_fr.includes("cerealier")||item.alim_ssgrp_nom_fr.includes("beautysane")||item.alim_ssssgrp_nom_fr.includes("cerealier")||item.alim_grp_nom_fr.includes("cerealier")){
+            }else if (item.alim_ssgrp_nom_fr.includes("céréaliers")||item.alim_ssgrp_nom_fr.includes("céréaliers")||item.alim_ssssgrp_nom_fr.includes("céréaliers")||item.alim_grp_nom_fr.includes("céréaliers")){
                 this.state.foodlist.cerealiers.push({
-                    key:item.itemID,
-                    value:item.itemID,
+                    key:item.alim_code,
+                    value:item.alim_code,
                     text:item.alim_nom_fr
                 })
 
-            }else if (item.alim_ssgrp_nom_fr.includes("laitier")||item.alim_ssssgrp_nom_fr.includes("laitier")||item.alim_grp_nom_fr.includes("laitier")){
+            }else if (item.alim_ssgrp_nom_fr.includes("laitiers")||item.alim_ssssgrp_nom_fr.includes("laitiers")||item.alim_grp_nom_fr.includes("laitiers")){
                 this.state.foodlist.laitiers.push({
-                    key:item.itemID,
-                    value:item.itemID,
+                    key:item.alim_code,
+                    value:item.alim_code,
                     text:item.alim_nom_fr
                 })
 
@@ -331,6 +331,8 @@ return dd
 }
     saveData(){
 
+        this.setState({loadingButton:true})
+
 
 
 
@@ -367,8 +369,8 @@ return dd
             }
 
 
-        }).then(()=>{
-            let dd = this.getingr()
+        }).then(async () => {
+            let dd = await this.getingr()
             return dd
         }).then((dd)=>{
 
@@ -376,27 +378,27 @@ return dd
             let lipides=0
             let proteines=0
             let glucides=0
-            this.state.ingr.map((item,key)=>{
+            console.log(this.state.ingr)
+            this.state.ingr.map( (item, key) => {
 
-                fetch('https://ayurws.azurewebsites.net/foodsV2/'+item.id_ingr, {
+                 fetch('https://ayurws.azurewebsites.net/foodsV2/' + item.id_ingr, {
                     method: 'GET',
 
-                }).then(response => response.json()).then((res)=>{
-                    lipides = lipides + ((parseFloat(res.Lipides)* parseFloat(item.dose_Ingre))/100)
-                    proteines=proteines +  ((parseFloat(res.Proteines)* parseFloat(item.dose_Ingre))/100)
-                    glucides=glucides+((parseFloat(res.Glucides)* parseFloat(item.dose_Ingre))/100)
+
+                }).then(response => response.json()).then((res) => {
+                    lipides = lipides + ((parseFloat(res.Lipides) * parseFloat(item.dose_Ingre)) / 100)
+                    proteines = proteines + ((parseFloat(res.Proteines) * parseFloat(item.dose_Ingre)) / 100)
+                    glucides = glucides + ((parseFloat(res.Glucides) * parseFloat(item.dose_Ingre)) / 100)
                     let dataR = this.state.data
-                    dataR.list_Gramme_Glucide=glucides
-                    dataR.list_Gramme_Lipide=lipides
-                    dataR.list_Gramme_Proteine=proteines
+                    dataR.list_Gramme_Glucide = glucides
+                    dataR.list_Gramme_Lipide = lipides
+                    dataR.list_Gramme_Proteine = proteines
 
 
-                    console.log(lipides,glucides,proteines)
+                    console.log(lipides, glucides, proteines)
 
-                    this.setState({data:dataR})
+                    this.setState({data: dataR})
                 })
-
-
 
 
             })
@@ -423,6 +425,8 @@ return dd
 
                     }).then(()=>{
                         this.setState({openAlert:true,alertMessage:"Recette creer avec success",alertType:'success'})
+                        this.setState({loadingButton:false})
+
                     })
                 }
                     .bind(this),
@@ -1721,15 +1725,19 @@ return dd
 
                         <div className="row justify-content-center mt-5">
                             <Button
-
-
-
-
+                                loading={true}
                                 style={{background:"#4ca832",color:"white",width:"40%"}}
                                 onClick={()=>{this.saveData()}}
 
                             >
-                                Créer une recette
+                                {this.state.loadingButton===false?
+                                    <div>
+                                        Créer une recette
+                                    </div>:
+                                    <CircularProgress style={{color:"green"}} />
+
+                                }
+
                             </Button>
                         </div>
 
