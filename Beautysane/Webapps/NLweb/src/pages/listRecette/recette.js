@@ -450,7 +450,7 @@ handleclick(cat,name){
                                           (((this.state.plat.dej===true?item.plat.includes("Petit déjeuner"):"")|| (this.state.plat.dess===true?item.plat.includes("Dessert"):"")|| (this.state.plat.ps===true?item.plat.includes("Plats principal"):"")))
                                           &&
                                           <div className="col-md-4 mt-3">
-                                              <div className="card" style={{width:"80%",height:"100%"}}>
+                                              <div  onClick={()=>{this.props.history.push("/recette/"+key)}} className="card" style={{width:"80%",height:"100%",cursor:"pointer"}}>
                                                   <img  className="card-img-top" src={item.photo} style={{width:"100%",height:200}} alt="Card  cap"/>
                                                   <div className="card-body">
                                                       <h5 className="card-title">{item.nomRecette}</h5>

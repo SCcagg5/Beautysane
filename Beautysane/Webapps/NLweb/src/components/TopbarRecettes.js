@@ -129,18 +129,19 @@ class TopbarRecettes extends Component {
                             </div>
 
                             <div className="col-md-1">
-                                <h3>Recettes</h3>
+                                <text style={{fontWeight: "bold" , fontSize:"1.8vw",color:"black" }}>Recette</text>
                             </div>
                             <div className="col-md-1">
-                                <h3>Workout</h3>
+                                <text style={{fontWeight: "bold" , fontSize:"1.8vw",color:"black" }}>Workout</text>
+
                             </div>
                             <div className="col-md-1">
-                                <h3>Article</h3>
+                                <text style={{fontWeight: "bold" , fontSize:"1.8vw",color:"black" }}>Article</text>
                             </div>
                             <div className="col-md-1">
-                                <h3 style={{cursor:"pointer"}} onClick={()=>this.props.history.push('/questions')}>BodyCheck</h3>
+                                <h3 style={{fontWeight: "bold" , fontSize:"1.8vw",color:"black" ,cursor:"pointer"}} onClick={()=>this.props.history.push('/questions')}>BodyCheck</h3>
                             </div>
-                            <div>
+                            <div className="col-md-1">
                                 <button type="button" className="btn btn-success" style={{backgroundColor:"#00ba4c",color:"white"}}>BOUTIQUE</button>
 
                             </div>

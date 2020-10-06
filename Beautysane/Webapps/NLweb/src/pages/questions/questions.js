@@ -1,5 +1,8 @@
 import React, {Component} from 'react';
 import './index.css'
+import  QuestionService from "../../provider/webserviceQuestions"
+import Snackbar from "@material-ui/core/Snackbar"
+import MySnackbarContentWrapper from "../../tools/customSnackBar";
 
 import firebase from "firebase";
 const url = process.env.REACT_APP_endpoint
@@ -7,6 +10,9 @@ class Questions extends Component {
     constructor(props) {
         super(props);
         this.state={
+            openAlert: false,
+            alertMessage: "",
+            alertType: "",
             progressbar:"0%",
             questions:[],
             questionN:0,
@@ -30,6 +36,117 @@ class Questions extends Component {
     }
 
 sendMail(){
+
+  /*  let dd={
+        emailReciver:"jawher.zairi@sesame.com.tn",
+        subject:"bodycheckNL",
+        linkUrl :"http://localhost:3001/api/generateDoc",
+        url:"http://localhost:3001/api/generateDoc",
+        msg:"document de votre bodycheck NL ",
+        footerMsg : "merci"
+    }
+
+    fetch('http://localhost:3001/api/sendCustomMailWithUrl', {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body:JSON.stringify(dd)
+    }).then(response => response.json()).catch(error => {
+        console.log(error);
+    })*/
+
+/*
+
+        let user_id = localStorage.getItem('uid')
+        let quest = this.state.questions
+    let questions = {
+        id_user:user_id,
+        info_perso : quest[0].rep,
+        alimentation1 : quest[1].rep,
+        alimentation2   :quest[2].rep,
+        budget_alimen   : quest[3].rep,
+        consom_feculent        : quest[4].rep ,
+        consom_legume        : quest[5].rep,
+        consom_fruit     : quest[6].rep,
+        consom_viande  : quest[7].rep,
+        consom_laitiers	  : quest[8].rep,
+        consom_prod_gras : quest[9].rep,
+        consom_prod_sucre  : quest[10].rep,
+        consom_alcool   : quest[11].rep,
+        vous_grignotez  : quest[12].rep,
+        saute_repas  : quest[13].rep,
+        oui_lequel  : quest[14].rep,
+        activite_jour  : quest[15].rep,
+        heure_sport  : quest[16].rep,
+        travaill_horraire_decale : quest[17].rep,
+        probleme_de : quest[18].rep,
+        objectif  : quest[19].rep,
+    }
+
+         let data = {
+            questions : questions,
+             user_id:user_id
+         }
+
+         console.log(questions)
+        QuestionService.CreateQuestions(questions).then(res=> {
+            if (quest[19].rep==="Minceur" && (res!=null && res!=undefined)){
+                let miniceur={
+                    question_id : res.data,
+                    poids_souhaite:quest[20].rep,
+                    ou_surpoids:quest[21].rep,
+                    cause_surpoids:quest[23].rep,
+                    souffrez_pathologies:quest[26].rep,
+                    fumer_reg:quest[29].rep,
+                    arret_fumer:quest[30].rep,
+                    age:quest[31].rep,
+                    taille: quest[32].rep,
+                    poids : quest[33].rep,
+
+                }
+
+                QuestionService.CreateMiniceur(miniceur).then(res => {console.log(res)}).then(()=>
+                    this.setState({openAlert:true,alertMessage:"BodyCheck creer avec success",alertType:'success'})
+                )
+            }else if (quest[19].rep==="Sport" && (res!=null && res!=undefined)){
+                let sport = {
+                    question_id : res.data,
+                    motivation:quest[24].rep,
+                    souffrez_pathologies:quest[26].rep,
+                    fumer_reg:quest[29].rep,
+                    arret_fumer:quest[30].rep,
+                    age:quest[31].rep,
+                    taille: quest[32].rep,
+                    poids : quest[33].rep,
+
+
+                }
+                QuestionService.CreateSport(sport).then(res => {console.log(res)}).then(()=>
+                    this.setState({openAlert:true,alertMessage:"BodyCheck creer avec success",alertType:'success'})
+                )
+            }else if (quest[19].rep==="Bien-être" && (res!=null && res!=undefined)){
+                let BienEtre = {
+                    question_id : res.data,
+                    motivation:quest[25].rep,
+                    souffrez_pathologies:quest[26].rep,
+                    fumer_reg:quest[29].rep,
+                    arret_fumer:quest[30].rep,
+                    age:quest[31].rep,
+                    taille: quest[32].rep,
+                    poids : quest[33].rep,
+
+
+                }
+                QuestionService.CreateBienEtre(BienEtre).then(res => {console.log(res)}).then(()=>
+                    this.setState({openAlert:true,alertMessage:"BodyCheck creer avec success",alertType:'success'})
+                )
+            }
+        })
+
+
+*/
     fetch(url+'sendNlmMailWithUrl', {
         method: 'post',
         headers: {
@@ -37,14 +154,22 @@ sendMail(){
             'Content-Type': 'application/json'
         },
         body: JSON.stringify(this.state.questions)
-    }).then(function(response) {
-        return response.json();
+    }).then((response)=> {
+
     })
+
+    console.log(this.state.questions)
+
 }
 
 
 
     componentDidMount() {
+
+        let uid = localStorage.getItem('uid')
+        if (uid=== undefined || uid ===""|| uid ===null){
+            this.props.history.push('/login/questions')
+        }
 
         firebase.database().ref('questions').on('value',  (snapshot)=> {
 
@@ -129,6 +254,8 @@ sendMail(){
             this.setState({questions:rep,
                 questionN:parseInt(rep[number].next)})
 
+
+
         }
 
 
@@ -208,7 +335,7 @@ sendMail(){
                                     <text>{item.text}</text>
                                 </div>
 
-                                <input placeholder={item.placeholder} value={item.response != null ? item.response : ""}
+                                <input placeholder={item.placeholder} value={localStorage.getItem('email')}
                                        onChange={(e) => this.changeText(number, key, e)} type="email"
                                        className="form-control mt-2"
                                 />
@@ -250,7 +377,21 @@ sendMail(){
 
 
 
-
+                <Snackbar
+                    anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'left',
+                    }}
+                    open={this.state.openAlert}
+                    autoHideDuration={5000}
+                    onClose={this.closeSnackbar}
+                >
+                    <MySnackbarContentWrapper
+                        onClose={this.closeSnackbar}
+                        variant={this.state.alertType}
+                        message={this.state.alertMessage}
+                    />
+                </Snackbar>
 
 
             </div>
