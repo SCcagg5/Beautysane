@@ -1,0 +1,9 @@
+version: "3"
+
+services:
+  build-web:
+    build: .
+    container_name: build-web
+    volumes:
+      - ../../Beautysane/Webapps/NLweb:/app/
+
