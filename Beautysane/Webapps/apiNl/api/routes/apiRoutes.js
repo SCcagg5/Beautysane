@@ -4,7 +4,8 @@ module.exports = function (app) {
 
 
 
-
+    app.route("/api/getAllProducts")
+        .get(api.getAllProductsBrainyFood);
 
 	app.route('/api/sendCustomMailWithUrl')
         .post(api.sendCustomMailWithUrl)

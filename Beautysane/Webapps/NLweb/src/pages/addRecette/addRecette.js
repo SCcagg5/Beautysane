@@ -53,6 +53,7 @@ class AddRecette extends Component {
                 list_Gramme_Lipide:"",
                 list_Gramme_Proteine:"",
                 nutriscore:"",
+                preparation:"",
 
 
                 list_photo :"",
@@ -80,6 +81,10 @@ class AddRecette extends Component {
             alertType: "",
             loading :false,
             percentage:"",
+            preparation:[{
+                text:""
+
+            }],
             dataLength:"",
             recettes:[],
             files:"",
@@ -160,6 +165,15 @@ componentDidMount() {
 
     })
 }
+
+addPreparation(){
+        let data = this.state.preparation
+       data.push({
+           text:""
+       })
+    this.setState({preparation:data})
+}
+
 
 addItem(name){
         let data= this.state.Ingredients
@@ -329,6 +343,18 @@ getingr(){
 return dd
 
 }
+
+async getPreparation(){
+        let data = this.state.preparation
+    let text = ""
+
+    data.map((item,key)=>{
+        text = text +key+"- "+item.text+ " (space) "
+    })
+    let dd = this.state.data
+     dd.preparation=text
+    this.setState({data:dd})
+}
     saveData(){
 
         this.setState({loadingButton:true})
@@ -371,6 +397,7 @@ return dd
 
         }).then(async () => {
             let dd = await this.getingr()
+            await this.getPreparation()
             return dd
         }).then((dd)=>{
 
@@ -445,6 +472,13 @@ return dd
 
 
     }
+
+    changeTextPreparation(key,e){
+        let data = this.state.preparation
+        data[key].text=e.target.value
+        this.setState({preparation:data})
+
+    }
     uploadImage(event) {
 
 
@@ -458,7 +492,10 @@ return dd
 
             var storageRef = firebase.storage().ref().child('/recettes/' + list_photo.name);
             var file = list_photo;
-            var uploadTask = storageRef.put(file);
+
+          var uploadTask = storageRef.put(file);
+
+
 
 
             uploadTask.on('state_changed', snapshot => {
@@ -1637,7 +1674,43 @@ return dd
                         </div>
 
                         }
+                        <div className="row">
+                            <div className="col-md-12 mt-5">
+                                <h5 className="font-weight-bold">Preparation</h5>
+                                <hr style={{height:2 ,width:"100%",backgroundColor:"black"}}/>
+                            </div>
 
+                        </div>
+
+
+
+                        <div>
+                            <h5> Les etapes :</h5>
+                        </div>
+
+
+                        <div className="mt-2">
+                            {this.state.preparation.map((item,key)=>(
+                                <div className="row ml-3 align-items-center mt-2">
+                                    <div className="col-md-1">
+                                        <h5> {"Etape "+ (key+1)}</h5>
+                                    </div>
+                                    <div className="col-md-11">
+                                        <TextField value={this.state.preparation[key].text} onChange={(e)=>{this.changeTextPreparation(key,e)}}  style={{width:"100%"}} id="outlined-basic"  variant="outlined" />
+
+                                    </div>
+                                </div>
+                            ))}
+
+
+
+                        </div>
+
+                        <div className="row justify-content-end mt-2">
+                            <div className="col-md-1 text-right">
+                            <img src={plus} style={{width:"40%" ,cursor:"pointer"}} onClick={()=>{this.addPreparation()}}/>
+                            </div>
+                        </div>
 
 
 

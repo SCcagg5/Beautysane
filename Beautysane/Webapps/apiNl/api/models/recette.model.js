@@ -18,6 +18,7 @@ var Employee = function(recette){
     this.list_plat = recette.list_plat
     this.list_video = recette.list_video
     this.nutriscore=recette.nutriscore
+    this.preparation=recette.preparation
 
 };
 Employee.create = function (newEmp, result) {

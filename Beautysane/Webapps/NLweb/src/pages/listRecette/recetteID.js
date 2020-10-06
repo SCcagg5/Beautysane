@@ -21,6 +21,7 @@ import Button from '@material-ui/core/Button';
 import { degrees, PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 import  pdf from '../../assets/doc/PadthaiNL.pdf'
 
+
 const endpoint = process.env.REACT_APP_endpoint;
 
 class RecetteId extends Component {
@@ -151,8 +152,144 @@ class RecetteId extends Component {
 
                 <div className="wrapper ">
 
+
+
                <div className="container-fluid " style={{paddingBottom:100}}>
-                   <div className="text-left">
+
+
+                   <div className="row ">
+                       <div className="col-md-3">
+                           <div>
+                               <text style={{fontSize:"1.2vw" , color:"#ffd739",fontWeight:"bold"}}>
+                                   Nombre de personne : <text style={{color:"black"}}>{rec.list_Nombre_person}</text>
+                               </text>
+                           </div>
+                           <div className="mt-2">
+                               <text style={{fontSize:"1.2vw" , color:"#ffd739",fontWeight:"bold"}}>
+                                   Preparation :<text style={{color:"black"}}> {rec.list_Duree_prepa_repas} </text>
+                               </text>
+                           </div>
+                           <div className="mt-2">
+                               <text style={{fontSize:"1.2vw" , color:"#ffd739",fontWeight:"bold"}}>
+                                   Cuisson: <text style={{color:"black"}}>{rec.list_Duree_Cuission}</text>
+                               </text>
+                           </div>
+
+                       </div>
+                       <div className="col-md-6 ">
+                           <div className="row justify-content-center align-items-center">
+
+                               <div className="col-md-3">
+                               </div>
+                               <div className="col-md-3">
+
+                               </div>
+                               <div className="col-md-3">
+
+                               </div>
+                               <div className="col-md-3">
+                                   {rec.nutriscore==="A"&&
+
+                                   <img src={A} style={{width:"100%"}}/>
+                                   }
+                                   {rec.nutriscore==="B"&&
+
+                                   <img src={B} style={{width:"100%"}}/>
+                                   }
+                                   {rec.nutriscore==="C"&&
+
+                                   <img src={C} style={{width:"100%"}}/>
+                                   }
+                                   {rec.nutriscore==="D"&&
+
+                                   <img src={D} style={{width:"100%"}}/>
+                                   }
+                                   {rec.nutriscore==="E"&&
+
+                                   <img src={E} style={{width:"100%"}}/>
+                                   }
+
+                               </div>
+                           </div>
+
+
+                       </div>
+                       <div className="col-md-3">
+                           <div>
+                               <text style={{fontSize:"1.2vw" , color:"#ffd739",fontWeight:"bold"}}>
+                                   Proteines : <text style={{color:"black"}}>{rec.list_Gramme_Proteine+" "} </text>gr
+                               </text>
+                           </div>
+                           <div className="mt-2">
+                               <text style={{fontSize:"1.2vw" , color:"#ffd739",fontWeight:"bold"}}>
+                                   Glucides : <text style={{color:"black"}}>{rec.list_Gramme_Glucide+" "} </text>gr
+                               </text>
+                           </div>
+                           <div className="mt-2">
+                               <text style={{fontSize:"1.2vw" , color:"#ffd739",fontWeight:"bold"}}>
+                                   Lipides : <text style={{color:"black"}}>{rec.list_Gramme_Lipide+" "} </text>gr
+                               </text>
+                           </div>
+                       </div>
+                   </div>
+                   <hr style={{width:"100%",height:1,borderWidth:2,borderColor:"#e47252",borderRadius:10}}/>
+
+                   <div className="row justify-content-center">
+                       <div className="col-md-4">
+
+                           <h2 style={{color:"#f8bf5e"}}>
+                               INGREDIENTS
+                           </h2>
+
+                           {ing!=[] && ing.map((item,key)=>(
+                               <div className="mt-3">
+                                   <text style={{fontSize:"1.2vw"}}>   {"- "+item.dose_Ingre+"g "+item.nom_Ingr} </text>
+                               </div>
+                           ))}
+
+                       </div>
+                       <div className="col-md-8">
+                           <h2 style={{color:"#f8bf5e"}}>
+                               PREPARATION :
+                           </h2>
+
+
+
+
+                               {rec.preparation!=undefined?
+                                   <div style={{marginLeft:10}}>
+                                       {
+                                           rec.preparation.split("(space)").map((item, idx) =>
+                                                (
+                                                  <div style={{marginTop:10}}>
+                                                      <text style={{fontSize:"1.0vw"}}>{item}</text>
+                                                  </div>
+                                               )
+                                           )
+                                       }
+                                   </div>
+
+                                   :null}
+
+
+                                   <div className="row mt-3 align-items-end">
+                                       <div className="col-md-3">
+
+                                       <h2 style={{color:"#f8bf5e"}}>
+                                           Bon a Savoir
+                                       </h2>
+                                       </div>
+                                       <div className="col-md-8 text-center">
+                                           <img src={rec.list_photo} style={{width:"60%",borderRadius:30}}/>
+                                       </div>
+                                   </div>
+
+                       </div>
+
+                   </div>
+
+                   {/*
+                        <div className="text-left">
                        <h1 style={{color:"#00ba4c" ,fontFamily:"cursive"}}>{rec.list_nomRecette}</h1>
                    </div>
                    <div className="row mt-2">
@@ -358,6 +495,8 @@ class RecetteId extends Component {
 
 
                    </div>
+                   */}
+
                </div>
                 </div>
 

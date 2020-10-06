@@ -155,10 +155,10 @@ sendMail(){
         },
         body: JSON.stringify(this.state.questions)
     }).then((response)=> {
-        console.log("mail"+response.json())
+
     })
 
-
+    console.log(this.state.questions)
 
 }
 
@@ -253,6 +253,8 @@ sendMail(){
             rep[number].responses[key].selected="true"
             this.setState({questions:rep,
                 questionN:parseInt(rep[number].next)})
+
+
 
         }
 

@@ -102,7 +102,7 @@ class Authentification extends Component {
                 localStorage.setItem('user',JSON.stringify(user));
                 localStorage.setItem('role',user.role);
 
-                this.props.history.push('/'+this.state.to+'/vue');
+                this.props.history.push('/'+this.state.to);
                 console.log(user)
                 this.setState({
                     loading:false
