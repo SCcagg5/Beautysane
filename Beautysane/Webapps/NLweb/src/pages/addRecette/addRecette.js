@@ -93,7 +93,7 @@ class AddRecette extends Component {
                 legumes:[],
                 cerealiers:[],
                 laitiers: [],
-                viande:[]
+                viandes:[]
             }
         }
 }
@@ -112,28 +112,32 @@ componentDidMount() {
                     key:item.alim_code,
                     value:item.alim_code,
                     text:item.alim_nom_fr,
+                    image_url:item.image_url
 
                 })
 
             }else if (item.alim_ssgrp_nom_fr.includes("viande")||item.alim_ssssgrp_nom_fr.includes("viande")||item.alim_grp_nom_fr.includes("viande")){
-                this.state.foodlist.viande.push({
+                this.state.foodlist.viandes.push({
                     key:item.alim_code,
                     value:item.alim_code,
-                    text:item.alim_nom_fr
+                    text:item.alim_nom_fr,
+                    image_url:item.image_url
                 })
 
             }else if (item.alim_ssgrp_nom_fr.includes("céréaliers")||item.alim_ssgrp_nom_fr.includes("céréaliers")||item.alim_ssssgrp_nom_fr.includes("céréaliers")||item.alim_grp_nom_fr.includes("céréaliers")){
                 this.state.foodlist.cerealiers.push({
                     key:item.alim_code,
                     value:item.alim_code,
-                    text:item.alim_nom_fr
+                    text:item.alim_nom_fr,
+                    image_url:item.image_url
                 })
 
             }else if (item.alim_ssgrp_nom_fr.includes("laitiers")||item.alim_ssssgrp_nom_fr.includes("laitiers")||item.alim_grp_nom_fr.includes("laitiers")){
                 this.state.foodlist.laitiers.push({
                     key:item.alim_code,
                     value:item.alim_code,
-                    text:item.alim_nom_fr
+                    text:item.alim_nom_fr,
+                    image_url:item.image_url
                 })
 
             }
@@ -181,7 +185,8 @@ addItem(name){
     data[name].push({
         nom_Ingr:"",
         dose_Ingre:"",
-        id_ingr:""
+        id_ingr:"",
+        image_url:""
     })
     this.setState({Ingredients:data})
 }
@@ -536,11 +541,22 @@ async getPreparation(){
     dropdownHangleChange(event,e,name1,name2,key){
 
         console.log(e.target.textContent)
+        console.log(event)
 
 
         let data = this.state.Ingredients
         data[name1][key]["id_ingr"] = event.value
         data[name1][key]["nom_Ingr"] = e.target.textContent
+        this.state.foodlist[name1].map((item,key2)=>{
+            if (item.value===event.value && item.text===e.target.textContent){
+                if (item.image_url!=null){
+                    data[name1][key]["image_url"] = item.image_url
+                }
+
+            }
+        })
+
+
         this.setState({Ingredients: data})
 
         console.log(this.state.Ingredients)
@@ -551,7 +567,9 @@ async getPreparation(){
     handleChange2(event,name1,name2,key){
 
         if (name2==="nom_Ingr"){
-            const { myValue } = event.currentTarget.dataset;
+            const { myValue  , myImage} = event.currentTarget.dataset;
+
+            console.log("image : "+myImage )
             // --> 123
 
 
@@ -559,6 +577,7 @@ async getPreparation(){
             let data = this.state.Ingredients
             data[name1][key][name2] = myValue
             data[name1][key]["id_ingr"]=event.target.value
+            data[name1][key]["image_url"]=myImage
             this.setState({Ingredients: data})
         }else{
             let data = this.state.Ingredients
@@ -614,7 +633,7 @@ async getPreparation(){
         const legumes = this.state.foodlist.legumes
         const cereliers=this.state.foodlist.cerealiers
         const laitiers=this.state.foodlist.laitiers
-        const viandes=this.state.foodlist.viande
+        const viandes=this.state.foodlist.viandes
 
         return (
             <div >
@@ -772,7 +791,7 @@ async getPreparation(){
                                                     id="demo-simple-select"
                                                 >
                                                     { legumes.filter(name => (name.text.startsWith('A')||name.text.startsWith('B'))).map(filteredName => (
-                                                        <MenuItem value={filteredName.value}  data-my-value={filteredName.text}  >{filteredName.text} </MenuItem>
+                                                        <MenuItem value={filteredName.value}  data-my-value={filteredName.text} data-my-image={filteredName.image_url}  >{filteredName.text} </MenuItem>
                                                     ))}
 
                                                 </Select>
@@ -792,7 +811,7 @@ async getPreparation(){
                                                     id="demo-simple-select"
                                                 >
                                                     {this.state.foodlist.legumes.filter(name => (name.text.startsWith('C'))).map(filteredName => (
-                                                        <MenuItem value={filteredName.value}  data-my-value={filteredName.text}  >{filteredName.text} </MenuItem>
+                                                        <MenuItem value={filteredName.value}  data-my-value={filteredName.text} data-my-image={filteredName.image_url}  >{filteredName.text} </MenuItem>
                                                     ))}
 
                                                 </Select>
@@ -812,7 +831,7 @@ async getPreparation(){
                                                     id="demo-simple-select"
                                                 >
                                                     {this.state.foodlist.legumes.filter(name => (name.text.startsWith('D')||name.text.startsWith('E')||name.text.startsWith('F'))).map(filteredName => (
-                                                        <MenuItem value={filteredName.value}  data-my-value={filteredName.text}  >{filteredName.text} </MenuItem>
+                                                        <MenuItem value={filteredName.value}  data-my-value={filteredName.text} data-my-image={filteredName.image_url}   >{filteredName.text} </MenuItem>
                                                     ))}
 
                                                 </Select>
@@ -832,7 +851,7 @@ async getPreparation(){
                                                     id="demo-simple-select"
                                                 >
                                                     {this.state.foodlist.legumes.filter(name => (name.text.startsWith('G')||name.text.startsWith('H')||name.text.startsWith('I'))).map(filteredName => (
-                                                        <MenuItem value={filteredName.value}  data-my-value={filteredName.text}  >{filteredName.text} </MenuItem>
+                                                        <MenuItem value={filteredName.value}  data-my-value={filteredName.text} data-my-image={filteredName.image_url}  >{filteredName.text} </MenuItem>
                                                     ))}
 
                                                 </Select>
@@ -852,7 +871,7 @@ async getPreparation(){
                                                     id="demo-simple-select"
                                                 >
                                                     {this.state.foodlist.legumes.filter(name => (name.text.startsWith('J')||name.text.startsWith('K')||name.text.startsWith('L'))).map(filteredName => (
-                                                        <MenuItem value={filteredName.value}  data-my-value={filteredName.text}  >{filteredName.text} </MenuItem>
+                                                        <MenuItem value={filteredName.value}  data-my-value={filteredName.text} data-my-image={filteredName.image_url}  >{filteredName.text} </MenuItem>
                                                     ))}
 
                                                 </Select>
@@ -872,7 +891,7 @@ async getPreparation(){
                                                     id="demo-simple-select"
                                                 >
                                                     {this.state.foodlist.legumes.filter(name => (name.text.startsWith('M')||name.text.startsWith('N')||name.text.startsWith('O'))).map(filteredName => (
-                                                        <MenuItem value={filteredName.value}  data-my-value={filteredName.text}  >{filteredName.text} </MenuItem>
+                                                        <MenuItem value={filteredName.value}  data-my-value={filteredName.text} data-my-image={filteredName.image_url}  >{filteredName.text} </MenuItem>
                                                     ))}
 
                                                 </Select>
@@ -892,7 +911,7 @@ async getPreparation(){
                                                     id="demo-simple-select"
                                                 >
                                                     {this.state.foodlist.legumes.filter(name => (name.text.startsWith('P')||name.text.startsWith('Q'))).map(filteredName => (
-                                                        <MenuItem value={filteredName.value}  data-my-value={filteredName.text}  >{filteredName.text} </MenuItem>
+                                                        <MenuItem value={filteredName.value}  data-my-value={filteredName.text} data-my-image={filteredName.image_url}  >{filteredName.text} </MenuItem>
                                                     ))}
 
                                                 </Select>
@@ -912,7 +931,7 @@ async getPreparation(){
                                                     id="demo-simple-select"
                                                 >
                                                     {this.state.foodlist.legumes.filter(name => (name.text.startsWith('R')||name.text.startsWith('S')||name.text.startsWith('T'))).map(filteredName => (
-                                                        <MenuItem value={filteredName.value}  data-my-value={filteredName.text}  >{filteredName.text} </MenuItem>
+                                                        <MenuItem value={filteredName.value}  data-my-value={filteredName.text} data-my-image={filteredName.image_url} data-my-image={filteredName.image_url} >{filteredName.text} </MenuItem>
                                                     ))}
 
                                                 </Select>
@@ -1028,7 +1047,7 @@ async getPreparation(){
                                                     id="demo-simple-select"
                                                 >
                                                     {this.state.foodlist.cerealiers.filter(name => (name.text.startsWith('A')||name.text.startsWith('B'))).map(filteredName => (
-                                                        <MenuItem value={filteredName.value}  data-my-value={filteredName.text}  >{filteredName.text} </MenuItem>
+                                                        <MenuItem value={filteredName.value}  data-my-value={filteredName.text} data-my-image={filteredName.image_url}  >{filteredName.text} </MenuItem>
                                                     ))}
 
                                                 </Select>
@@ -1053,7 +1072,7 @@ async getPreparation(){
                                                         ||name.text.startsWith('D')||name.text.startsWith('E')||name.text.startsWith('F')||name.text.startsWith('G')
                                                         ||name.text.startsWith('H')||name.text.startsWith('I')||name.text.startsWith('J')||name.text.startsWith('K')
                                                         ||name.text.startsWith('l')||name.text.startsWith('M'))).map(filteredName => (
-                                                        <MenuItem value={filteredName.value}  data-my-value={filteredName.text}  >{filteredName.text} </MenuItem>
+                                                        <MenuItem value={filteredName.value}  data-my-value={filteredName.text} data-my-image={filteredName.image_url}  >{filteredName.text} </MenuItem>
                                                     ))}
 
                                                 </Select>
@@ -1073,7 +1092,7 @@ async getPreparation(){
                                                     id="demo-simple-select"
                                                 >
                                                     {this.state.foodlist.cerealiers.filter(name => (name.text.startsWith('P'))).map(filteredName => (
-                                                        <MenuItem value={ filteredName.value}  data-my-value={filteredName.text}  >{filteredName.text} </MenuItem>
+                                                        <MenuItem value={ filteredName.value}  data-my-value={filteredName.text} data-my-image={filteredName.image_url}  >{filteredName.text} </MenuItem>
                                                     ))}
 
                                                 </Select>
@@ -1096,7 +1115,7 @@ async getPreparation(){
                                                     {this.state.foodlist.cerealiers.filter(name => (name.text.startsWith('Q')
                                                         ||name.text.startsWith('R')||name.text.startsWith('S')||name.text.startsWith('T')||name.text.startsWith('U')
                                                         ||name.text.startsWith('V'))).map(filteredName => (
-                                                        <MenuItem value={filteredName.value}  data-my-value={filteredName.text}  >{filteredName.text} </MenuItem>
+                                                        <MenuItem value={filteredName.value}  data-my-value={filteredName.text} data-my-image={filteredName.image_url}  >{filteredName.text} </MenuItem>
                                                     ))}
 
                                                 </Select>
@@ -1213,7 +1232,7 @@ async getPreparation(){
                                                     id="demo-simple-select"
                                                 >
                                                     {this.state.foodlist.laitiers.filter(name => (name.text.startsWith('A')||name.text.startsWith('B'))).map(filteredName => (
-                                                        <MenuItem value={filteredName.value}  data-my-value={filteredName.text}  >{filteredName.text} </MenuItem>
+                                                        <MenuItem value={filteredName.value}  data-my-value={filteredName.text} data-my-image={filteredName.image_url}  >{filteredName.text} </MenuItem>
                                                     ))}
 
                                                 </Select>
@@ -1236,7 +1255,7 @@ async getPreparation(){
                                                 >
                                                     {this.state.foodlist.laitiers.filter(name => (name.text.startsWith('C')
                                                         ||name.text.startsWith('D')||name.text.startsWith('E'))).map(filteredName => (
-                                                        <MenuItem value={filteredName.value}  data-my-value={filteredName.text}  >{filteredName.text} </MenuItem>
+                                                        <MenuItem value={filteredName.value}  data-my-value={filteredName.text} data-my-image={filteredName.image_url}  >{filteredName.text} </MenuItem>
                                                     ))}
 
                                                 </Select>
@@ -1256,7 +1275,7 @@ async getPreparation(){
                                                     id="demo-simple-select"
                                                 >
                                                     {this.state.foodlist.laitiers.filter(name => (name.text.startsWith('F'))).map(filteredName => (
-                                                        <MenuItem value={filteredName.value}  data-my-value={filteredName.text}  >{filteredName.text} </MenuItem>
+                                                        <MenuItem value={filteredName.value}  data-my-value={filteredName.text} data-my-image={filteredName.image_url}  >{filteredName.text} </MenuItem>
                                                     ))}
 
                                                 </Select>
@@ -1278,7 +1297,7 @@ async getPreparation(){
                                                 >
                                                     {this.state.foodlist.laitiers.filter(name => (name.text.startsWith('G')
                                                         ||name.text.startsWith('I')||name.text.startsWith('L'))).map(filteredName => (
-                                                        <MenuItem value={filteredName.value}  data-my-value={filteredName.text}  >{filteredName.text} </MenuItem>
+                                                        <MenuItem value={filteredName.value}  data-my-value={filteredName.text} data-my-image={filteredName.image_url}  >{filteredName.text} </MenuItem>
                                                     ))}
 
                                                 </Select>
@@ -1300,7 +1319,7 @@ async getPreparation(){
                                                 >
                                                     {this.state.foodlist.laitiers.filter(name => (name.text.startsWith('M')
                                                         ||name.text.startsWith('P'))).map(filteredName => (
-                                                        <MenuItem value={filteredName.value}  data-my-value={filteredName.text}  >{filteredName.text} </MenuItem>
+                                                        <MenuItem value={filteredName.value}  data-my-value={filteredName.text} data-my-image={filteredName.image_url}  >{filteredName.text} </MenuItem>
                                                     ))}
 
                                                 </Select>
@@ -1322,7 +1341,7 @@ async getPreparation(){
                                                 >
                                                     {this.state.foodlist.laitiers.filter(name => (name.text.startsWith('R')
                                                         ||name.text.startsWith('S')||name.text.startsWith('T'))).map(filteredName => (
-                                                        <MenuItem value={filteredName.value}  data-my-value={filteredName.text}  >{filteredName.text} </MenuItem>
+                                                        <MenuItem value={filteredName.value}  data-my-value={filteredName.text} data-my-image={filteredName.image_url}  >{filteredName.text} </MenuItem>
                                                     ))}
 
                                                 </Select>
@@ -1344,7 +1363,7 @@ async getPreparation(){
                                                 >
                                                     {this.state.foodlist.laitiers.filter(name => (name.text.startsWith('V')
                                                         ||name.text.startsWith('Y'))).map(filteredName => (
-                                                        <MenuItem value={filteredName.value}  data-my-value={filteredName.text}  >{filteredName.text} </MenuItem>
+                                                        <MenuItem value={filteredName.value}  data-my-value={filteredName.text} data-my-image={filteredName.image_url}  >{filteredName.text} </MenuItem>
                                                     ))}
 
                                                 </Select>
@@ -1461,8 +1480,8 @@ async getPreparation(){
                                                     labelId="demo-simple-select-label"
                                                     id="demo-simple-select"
                                                 >
-                                                    {this.state.foodlist.viande.filter(name => (name.text.startsWith('A')||name.text.startsWith('B'))).map(filteredName => (
-                                                        <MenuItem value={filteredName.value}  data-my-value={filteredName.text}  >{filteredName.text} </MenuItem>
+                                                    {viandes.filter(name => (name.text.startsWith('A')||name.text.startsWith('B'))).map(filteredName => (
+                                                        <MenuItem value={filteredName.value}  data-my-value={filteredName.text} data-my-image={filteredName.image_url}  >{filteredName.text} </MenuItem>
                                                     ))}
 
                                                 </Select>
@@ -1483,9 +1502,9 @@ async getPreparation(){
                                                     labelId="demo-simple-select-label"
                                                     id="demo-simple-select"
                                                 >
-                                                    {this.state.foodlist.viande.filter(name => (name.text.startsWith('C')
+                                                    {viandes.filter(name => (name.text.startsWith('C')
                                                         ||name.text.startsWith('D')||name.text.startsWith('E'))).map(filteredName => (
-                                                        <MenuItem value={filteredName.value}  data-my-value={filteredName.text}  >{filteredName.text} </MenuItem>
+                                                        <MenuItem value={filteredName.value}  data-my-value={filteredName.text} data-my-image={filteredName.image_url}  >{filteredName.text} </MenuItem>
                                                     ))}
 
                                                 </Select>
@@ -1504,8 +1523,8 @@ async getPreparation(){
                                                     labelId="demo-simple-select-label"
                                                     id="demo-simple-select"
                                                 >
-                                                    {this.state.foodlist.viande.filter(name => (name.text.startsWith('F'))).map(filteredName => (
-                                                        <MenuItem value={filteredName.value}  data-my-value={filteredName.text}  >{filteredName.text} </MenuItem>
+                                                    {viandes.filter(name => (name.text.startsWith('F'))).map(filteredName => (
+                                                        <MenuItem value={filteredName.value}  data-my-value={filteredName.text} data-my-image={filteredName.image_url}  >{filteredName.text} </MenuItem>
                                                     ))}
 
                                                 </Select>
@@ -1525,9 +1544,9 @@ async getPreparation(){
                                                     labelId="demo-simple-select-label"
                                                     id="demo-simple-select"
                                                 >
-                                                    {this.state.foodlist.viande.filter(name => (name.text.startsWith('G')
+                                                    {viandes.filter(name => (name.text.startsWith('G')
                                                         ||name.text.startsWith('I')||name.text.startsWith('L'))).map(filteredName => (
-                                                        <MenuItem value={filteredName.value}  data-my-value={filteredName.text}  >{filteredName.text} </MenuItem>
+                                                        <MenuItem value={filteredName.value}  data-my-value={filteredName.text} data-my-image={filteredName.image_url}  >{filteredName.text} </MenuItem>
                                                     ))}
 
                                                 </Select>
@@ -1547,9 +1566,9 @@ async getPreparation(){
                                                     labelId="demo-simple-select-label"
                                                     id="demo-simple-select"
                                                 >
-                                                    {this.state.foodlist.viande.filter(name => (name.text.startsWith('M')
+                                                    {viandes.filter(name => (name.text.startsWith('M')
                                                         ||name.text.startsWith('P'))).map(filteredName => (
-                                                        <MenuItem value={filteredName.value}  data-my-value={filteredName.text}  >{filteredName.text} </MenuItem>
+                                                        <MenuItem value={filteredName.value}  data-my-value={filteredName.text} data-my-image={filteredName.image_url}  >{filteredName.text} </MenuItem>
                                                     ))}
 
                                                 </Select>
@@ -1569,9 +1588,9 @@ async getPreparation(){
                                                     labelId="demo-simple-select-label"
                                                     id="demo-simple-select"
                                                 >
-                                                    {this.state.foodlist.viande.filter(name => (name.text.startsWith('R')
+                                                    {viandes.filter(name => (name.text.startsWith('R')
                                                         ||name.text.startsWith('S')||name.text.startsWith('T'))).map(filteredName => (
-                                                        <MenuItem value={filteredName.value}  data-my-value={filteredName.text}  >{filteredName.text} </MenuItem>
+                                                        <MenuItem value={filteredName.value}  data-my-value={filteredName.text} data-my-image={filteredName.image_url}  >{filteredName.text} </MenuItem>
                                                     ))}
 
                                                 </Select>
@@ -1591,9 +1610,9 @@ async getPreparation(){
                                                     labelId="demo-simple-select-label"
                                                     id="demo-simple-select"
                                                 >
-                                                    {this.state.foodlist.viande.filter(name => (name.text.startsWith('V')
+                                                    {viandes.filter(name => (name.text.startsWith('V')
                                                         ||name.text.startsWith('Y'))).map(filteredName => (
-                                                        <MenuItem value={filteredName.value}  data-my-value={filteredName.text}  >{filteredName.text} </MenuItem>
+                                                        <MenuItem value={filteredName.value}  data-my-value={filteredName.text} data-my-image={filteredName.image_url}  >{filteredName.text} </MenuItem>
                                                     ))}
 
                                                 </Select>

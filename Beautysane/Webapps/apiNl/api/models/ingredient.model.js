@@ -6,6 +6,8 @@ var ingr = function(recette){
     this.dose_Ingre = recette.dose_Ingre;
     this.id_rec = recette.id_rec;
     this.id_ingr=recette.id_ingr
+    this.image_url=recette.image_url
+
 
 
 };

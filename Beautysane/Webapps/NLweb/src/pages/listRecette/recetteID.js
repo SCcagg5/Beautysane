@@ -242,9 +242,18 @@ class RecetteId extends Component {
                            </h2>
 
                            {ing!=[] && ing.map((item,key)=>(
-                               <div className="mt-3">
-                                   <text style={{fontSize:"1.2vw"}}>   {"- "+item.dose_Ingre+"g "+item.nom_Ingr} </text>
+
+                               <div className="row align-items-center mt-3" >
+                                   <div className="col-md-3">
+                                       <img src={item.image_url} style={{width:"100%"}}/>
+
+                                   </div>
+                                   <div className="col-md-9">
+                                       <text style={{fontSize:"1.2vw"}}>   {"- "+item.dose_Ingre+"g "+item.nom_Ingr} </text>
+                                   </div>
+
                                </div>
+
                            ))}
 
                        </div>
