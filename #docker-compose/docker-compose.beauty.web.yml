@@ -1,0 +1,30 @@
+version: '3'
+
+networks:
+  proxy:
+    external:
+      name: docker-compose_proxy
+  web-net:
+    external:
+      name: docker-compose_beauty-web-net
+  db-net:
+    external:
+      name: docker-compose_beauty-db-net
+
+
+services:
+  beauty-ged:
+     build: ../Beautysane/Webapps/NLweb/
+     container_name: beauty-ged-nginx
+     restart: always
+     tty: true
+     stdin_open: true
+     ports:
+      - 8000:80
+     networks:
+       - proxy
+     environment:
+       VIRTUAL_HOST: bilan2020.beautysane.com
+       VIRTUAL_PORT: 8000
+       LETSENCRYPT_HOST: bilan2020.beautysane.com
+       LETSENCRYPT_EMAIL: eliot.courtel@wanadoo.fr
