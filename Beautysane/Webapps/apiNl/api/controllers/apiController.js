@@ -44,8 +44,8 @@ exports.sendNLMailWithUrl = async function (req, res) {
         port: 587,
         secure: false, // true for 465, false for other ports
         auth: {
-            user: "smartco.majordhome2019@gmail.com",
-            pass: "Majordhome2019"
+            user: "smtp.nl2021@gmail.com",
+            pass: "Beautysane2021"
         }
     });
 
@@ -96,12 +96,12 @@ exports.sendNLMailWithUrl = async function (req, res) {
     var portionProdLaitiers=0
 
     if (imc > 18 && imc < 25) {
-        imct = "Votre IMC est compris entre 18 et 25, ce qui indique une corpulence normale. Cependant, vous pouvez désirer perdre quelques kilos pour retrouver votre poids de forme et vous sentir mieux dans son corps."
+        imct = "Votre IMC est compris entre 18 et 25, ce qui indique une corpulence normale. Cependant, vous pouvez désirer\n perdre quelques kilos pour retrouver votre poids de forme et vous sentir mieux dans son corps."
 
     } else if (imc > 25 && imc < 30) {
-        imct = "Votre IMC est supérieur à 25. A moins que vous ne fassiez partie de certaines catégories spécifiques de personnes (ex : sportifs de haut niveau), cela signifie que vous êtes en surpoids."
+        imct = "Votre IMC est supérieur à 25. A moins que vous ne fassiez partie de certaines catégories spécifiques de\n personnes (ex : sportifs de haut niveau), cela signifie que vous êtes en surpoids."
     } else if (imc > 30) {
-        imct = "Votre IMC est supérieur à 30. A moins que vous ne fassiez partie de certaines catégories spécifiques de personnes (ex : sportifs de haut niveau), cela signifie que vous êtes en surpoids, voire  en  situation d’obésité. Nous vous conseillons avant toute chose d’en parler à votre médecin."
+        imct = "Votre IMC est supérieur à 30. A moins que vous ne fassiez partie de certaines catégories spécifiques de \n personnes (ex : sportifs de haut niveau), cela signifie que vous êtes en surpoids, voire  en  situation d’obésité. Nous vous conseillons avant toute chose d’en parler à votre médecin."
     }
 
 
@@ -379,7 +379,8 @@ exports.sendNLMailWithUrl = async function (req, res) {
 
                 text :" Voici notre sélection de produits pour manger équilibré et rester en forme.",
                 grignotez :grignotez,
-                sautez_repas : sautez_repas}, function (err, dataa) {
+                sautez_repas : sautez_repas},
+              function (err, dataa) {
                 if (err){
                     console.log(err);
                 } else {
@@ -583,15 +584,6 @@ exports.sendNLMailWithUrl = async function (req, res) {
                                 rotate: degrees(0),
 
                             })
-                            troixiemePage.drawText("Poids souhaité" +poids_souhaite.toString()+" KG", {
-                                x: 65,
-                                y: 840-750,
-                                size: 12,
-                                font: helveticaFont,
-                                color: rgb(0, 0, 0),
-                                rotate: degrees(0),
-
-                            })
                             troixiemePage.drawText( probleme.toString(), {
                                 x: 35,
                                 y: 840-426,
@@ -679,7 +671,7 @@ exports.sendNLMailWithUrl = async function (req, res) {
                             transporter.sendMail(mainOptions, function (err, info) {
                                 if (err) {
                                     res.json({
-                                        msg: 'fail'
+                                        msg: err
                                     })
                                 } else {
                                     res.json({
@@ -715,17 +707,17 @@ exports.sendNLMailWithUrl = async function (req, res) {
                 "Nous avons des programmes adaptés, qui correspondent à vos besoins."
         } else if (body[24].rep === "Augmentation des Perf. Sportives") {
 
-            motivations = "Vous souhaitez adopter une nutrition sportive adaptée et équilibrée, pour augmenter vos performances sportives. Les enjeux sont de taille : fournir à votre\n" +
-                "corps l’énergie nécessaire à l’effort, à juste dose ! Les produits Beautysané sont formulés dans ce sens, et nous proposons des programmes adaptés à votre\n" +
+            motivations = "Vous souhaitez adopter une nutrition sportive adaptée et équilibrée, pour augmenter\n  vos performances sportives. Les enjeux sont de taille : fournir à votre\n" +
+                "corps l’énergie nécessaire à l’effort, à juste dose ! \n  Les produits Beautysané sont formulés dans ce sens, et nous proposons des programmes adaptés à votre\n" +
                 "activité sportive."
 
         } else if (body[24].rep === "Digestion optimisée") {
-            motivations = "Vous souffrez de troubles digestifs à l’effort, qui vous empêchent d’optimiser vos performances sportives. Beautysané vous offre une nutrition sportive optimale et un confort digestif, grâce au système HD (Haute Digestibilité), testé et adopté par tous nos ambassadeurs sportifs !"
+            motivations = "Vous souffrez de troubles digestifs à l’effort, qui vous empêchent d’optimiser vos performances \n  sportives. \n Beautysané vous offre une nutrition sportive optimale et un confort digestif, grâce au système HD (Haute Digestibilité), testé et adopté par tous nos ambassadeurs sportifs !"
 
         } else if (body[24].rep === "Récuperation") {
-            motivations = "Les heures suivant l’effort physique sont essentielles à la bonne récupération de l’organisme. Il est important de bien choisir votre boisson de récupération, pour optimiser la reconstruction musculaire et la restitution des réserves énergétiques. Un apport en BCAA, en vitamines et en minéraux est conseillé en cas d’effort intense sur le plan énergétique et/ou musculaire. Les produits Beautysané sont formulés dans ce sens."
+            motivations = "Les heures suivant l’effort physique sont essentielles à la bonne récupération de l’organisme. \n  Il est important de bien choisir votre boisson de récupération, pour optimiser la reconstruction musculaire et la restitution des réserves énergétiques. Un apport en BCAA, en vitamines et en minéraux est conseillé en cas d’effort intense sur le plan énergétique et/ou musculaire. Les produits Beautysané sont formulés dans ce sens."
         } else if (body[24].rep === "Illumination fringales") {
-            motivations = "Vous rencontrez souvent des “coups de pompe” pendant l’effort et/ou vous souffrez de fringales qui vous poussent à manger de façon compulsive. Grâce à une nutrition sportive adaptée et équilibrée, vous supprimerez ces effets indésirables."
+            motivations = "Vous rencontrez souvent des “coups de pompe” pendant l’effort et/ou vous souffrez de fringales \n qui vous poussent à manger de façon compulsive. Grâce à une nutrition sportive adaptée et équilibrée, vous supprimerez ces effets indésirables."
         }
 
 
@@ -734,11 +726,11 @@ exports.sendNLMailWithUrl = async function (req, res) {
         }
 
         if (body[28].rep != "" || body[26].rep != null) {
-            allergie = "Vous êtes intolérant et/ou allergique à un aliment : il est préférable d’en parler à votre conseiller Beautysané."
+            allergie = "Vous êtes intolérant et/ou allergique à un aliment : il est préférable d’en parler à votre \n  conseiller Beautysané."
         }
 
         if (body[29].rep === "OUI") {
-            fummeur = "Vous êtes fumeur. L’arrêt du tabac est un point de départ vers une meilleure hygiène\n de vie : alimentation équilibrée, activité physique, temps pour soi,... Si vous craignez la prise de poids à l’arrêt du tabac, nous avons des solutions simples à vous proposer."
+            fummeur = "Vous êtes fumeur. \n L’arrêt du tabac est un point de départ vers une meilleure hygiène de vie  : \n alimentation équilibrée, activité physique, \n temps pour soi,... Si vous craignez la prise de poids à l’arrêt du tabac, \n nous avons des solutions simples à vous proposer."
         }
 
         ejs.renderFile(path.join(__dirname, '../html/sport.ejs'), {
@@ -760,7 +752,8 @@ exports.sendNLMailWithUrl = async function (req, res) {
             text: " Voici notre sélection de produits pour manger équilibré et rester en forme.",
             grignotez: grignotez,
             sautez_repas: sautez_repas
-        }, function (err, data) {
+        },
+           /* function (err, data) {
             if (err) {
                 console.log(err);
             } else {
@@ -785,27 +778,300 @@ exports.sendNLMailWithUrl = async function (req, res) {
                     }
                 });
             }
-        });
+        });*/
+            function (err, dataa) {
+                if (err){
+                    console.log(err);
+                } else {
+
+                    const pdf='./DOC/BODYCHECK_reponse_Minceur.pdf'
+                    fs.readFile('./api/controllers/DOC/BODYCHECK_reponse_Sport.pdf', async function (err, data) {
+                        if (err) {
+                            console.log(err)
+                        } else {
+                            const existingPdfBytes = data
+
+                            const pdfDoc = await PDFDocument.load(existingPdfBytes)
+
+                            const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica)
+                            const pages = pdfDoc.getPages()
+                            const firstPage = pages[0]
+                            const secondPage = pages[1]
+                            const troixiemePage = pages[2]
+                            const quatriemePage = pages[3]
+
+
+
+                            const { width, height } = firstPage.getSize()
+
+                            firstPage.drawText(age.toString(), {
+                                x: 84,
+                                y: 840-697,
+                                size: 22,
+                                font: helveticaFont,
+                                color: rgb(204/255, 51/255, 153/255),
+                                rotate: degrees(0),
+                            })
+                            firstPage.drawText((taille*100).toString(), {
+                                x: 211,
+                                y: 840-697,
+                                size: 22,
+                                font: helveticaFont,
+                                color: rgb(204/255, 51/255, 153/255),
+                                rotate: degrees(0),
+                            })
+                            firstPage.drawText(poids.toString()+" KG", {
+                                x: 357,
+                                y: 840-697,
+                                size: 22,
+                                font: helveticaFont,
+                                color: rgb(204/255, 51/255, 153/255),
+                                rotate: degrees(0),
+                            })
+                            firstPage.drawText(dej.toFixed(2).toString(), {
+                                x: 500,
+                                y: 840-697,
+                                size: 22,
+                                font: helveticaFont,
+                                color: rgb(204/255, 51/255, 153/255),
+                                rotate: degrees(0),
+                            })
+
+                            secondPage.drawText(cuisine.toString(), {
+                                x: 35,
+                                y: 840-109,
+                                size: 12,
+                                font: helveticaFont,
+                                color: rgb(0, 0, 0),
+                                rotate: degrees(0),
+                            })
+                            secondPage.drawText(alimentation.toString(), {
+                                x: 35,
+                                y: 840-207,
+                                size: 12,
+                                font: helveticaFont,
+                                color: rgb(0, 0, 0),
+                                rotate: degrees(0),
+                            })
+
+                            secondPage.drawText((portionLegumes+portionFruits).toString()+" portions", {
+                                x: 55,
+                                y: 840-468,
+                                size: 12,
+                                font: helveticaFont,
+                                color: rgb(0, 0, 0),
+                                rotate: degrees(0),
+                            })
+                            secondPage.drawText((protionProteine).toString()+" portions", {
+                                x: 142,
+                                y: 840-468,
+                                size: 12,
+                                font: helveticaFont,
+                                color: rgb(0, 0, 0),
+                                rotate: degrees(0),
+                            })
+                            secondPage.drawText((portionProdLaitiers).toString()+" portions", {
+                                x: 228,
+                                y: 840-468,
+                                size: 12,
+                                font: helveticaFont,
+                                color: rgb(0, 0, 0),
+                                rotate: degrees(0),
+                            })
+                            secondPage.drawText((portionFeculents).toString()+" portions", {
+                                x: 319,
+                                y: 840-468,
+                                size: 12,
+                                font: helveticaFont,
+                                color: rgb(0, 0, 0),
+                                rotate: degrees(0),
+                            })
+
+                            secondPage.drawText((protionProdGras).toString()+" portions", {
+                                x: 406,
+                                y: 840-468,
+                                size: 12,
+                                font: helveticaFont,
+                                color: rgb(0, 0, 0),
+                                rotate: degrees(0),
+                            })
+                            secondPage.drawText((protionProdSucre).toString()+" portions", {
+                                x: 499,
+                                y: 840-468,
+                                size: 12,
+                                font: helveticaFont,
+                                color: rgb(0, 0, 0),
+                                rotate: degrees(0),
+                            })
+
+                            secondPage.drawText(legume.toString(), {
+                                x: 35,
+                                y: 840-511,
+                                size: 12,
+                                font: helveticaFont,
+                                color: rgb(0, 0, 0),
+                                rotate: degrees(0),
+                            })
+                            secondPage.drawText(viande.toString(), {
+                                x: 35,
+                                y: 840-537,
+                                size: 12,
+                                font: helveticaFont,
+                                color: rgb(0, 0, 0),
+                                rotate: degrees(0),
+                            })
+                            secondPage.drawText(feculent.toString(), {
+                                x: 35,
+                                y: 840-570,
+                                size: 12,
+                                font: helveticaFont,
+                                color: rgb(0, 0, 0),
+                                rotate: degrees(0),
+
+                            })
+                            secondPage.drawText(prodSucre.toString(), {
+                                x: 35,
+                                y: 840-600,
+                                size: 12,
+                                font: helveticaFont,
+                                color: rgb(0, 0, 0),
+                                rotate: degrees(0),
+
+                            })
+                            secondPage.drawText(prodGras.toString(), {
+                                x: 35,
+                                y: 840-630,
+                                size: 12,
+                                font: helveticaFont,
+                                color: rgb(0, 0, 0),
+                                rotate: degrees(0),
+
+                            })
+                            secondPage.drawText(grignotez.toString(), {
+                                x: 35,
+                                y: 840-755,
+                                size: 12,
+                                font: helveticaFont,
+                                color: rgb(0, 0, 0),
+                                rotate: degrees(0),
+
+                            })
+                            troixiemePage.drawText(sautez_repas.toString(), {
+                                x: 35,
+                                y: 840-73,
+                                size: 12,
+                                font: helveticaFont,
+                                color: rgb(0, 0, 0),
+                                rotate: degrees(0),
+
+                            })
+                            troixiemePage.drawText(depense_enegitique.toString(), {
+                                x: 35,
+                                y: 840-180,
+                                size: 12,
+                                font: helveticaFont,
+                                color: rgb(0, 0, 0),
+                                rotate: degrees(0),
+
+                            })
+                            troixiemePage.drawText(horraire_decale.toString(), {
+                                x: 35,
+                                y: 840-330,
+                                size: 12,
+                                font: helveticaFont,
+                                color: rgb(0, 0, 0),
+                                rotate: degrees(0),
+
+                            })
+                            troixiemePage.drawText( probleme.toString(), {
+                                x: 35,
+                                y: 840-426,
+                                size: 12,
+                                font: helveticaFont,
+                                color: rgb(0, 0, 0),
+                                rotate: degrees(0),
+
+                            })
+                            quatriemePage.drawText(motivations.toString().toString(), {
+                                x: 35,
+                                y: 840-180,
+                                size: 12,
+                                font: helveticaFont,
+                                color: rgb(0, 0, 0),
+                                rotate: degrees(0),
+
+                            })
+
+                            quatriemePage.drawText(fummeur.toString(), {
+                                x: 35,
+                                y: 840-470,
+                                size: 12,
+                                font: helveticaFont,
+                                color: rgb(0, 0, 0),
+                                rotate: degrees(0),
+
+                            })
+
+
+
+                            const pdfBytes = await pdfDoc.save()
+                            var mainOptions = {
+                                from: '"NL BodyCheck " <noreply@smartco.fr>',
+                                to: 'jawher.zairi@sesame.com.tn',
+                                subject: 'résultats de votre bodycheck, by Beautysané',
+                                html: dataa,
+
+                                attachments: [{   // stream as an attachment
+                                    filename: 'BodyCheckPDF.pdf',
+                                    contentType: 'application/pdf',
+                                    content: pdfBytes,
+
+                                }]
+
+
+                            };
+                            //console.log("html data ======================>", mainOptions.html);
+
+                            transporter.sendMail(mainOptions, function (err, info) {
+                                if (err) {
+                                    res.json({
+                                        msg: err
+                                    })
+                                } else {
+                                    res.json({
+                                        msg: 'success'
+                                    })
+                                }
+                            });
+
+
+                        }
+                    });
+
+
+                }
+            });
+
 
 
     } else if (objectif === "Bien-être") {
         var BienEtreMotivations = ""
 
         if (body[25].rep === "Manger équilibré en évitant les carences") {
-            BienEtreMotivations = "Combler les carences d’une alimentation pauvre en nutriments, à la qualité nutritionnelle parfois douteuse, c’est facile ! Beautysané vous propose des produits sains et équilibrés. Ils sont rassasiants et vous apportent tout ce dont vous avez besoin, en 5 minutes maxi de préparation."
+            BienEtreMotivations = "Combler les carences d’une alimentation pauvre en nutriments, \n à la qualité nutritionnelle parfois douteuse, c’est facile ! Beautysané vous propose des produits sains \n et équilibrés. Ils sont rassasiants et vous apportent tout ce dont vous avez besoin, en 5 minutes maxi de préparation."
         } else if (body[25].rep === "Retrouver un  confort digestif") {
-            BienEtreMotivations = "Les produits Beautysané sont sans gluten* et hautement digestes, grâce à un complexe enzymatique exclusif, le système HD, présent dans les gammes Energy Diet et Energy Diet+.\n" +
+            BienEtreMotivations = "Les produits Beautysané sont sans gluten* et hautement digestes,\n grâce à un complexe enzymatique exclusif, le système HD, présent dans les gammes Energy Diet et Energy Diet+.\n" +
                 "*excepté pour les saveurs Energy Diet Pain, P’tit déjeuner, Parmentier, Galettes et Energy Snack."
         } else if (body[25].rep === "Détoxifier mon organisme") {
-            BienEtreMotivations = "Démarrez un programme spécifique pour détoxifier votre corps ! Vous nettoyez votre organisme et faites le plein d’antioxydants, grâce à une alimentation appropriée. En effet, les produits Beautysané sont sans pesticides ni métaux lourds. Cette détox permet à votre organisme de fonctionner à nouveau de façon optimale !"
+            BienEtreMotivations = "Démarrez un programme spécifique pour détoxifier votre corps !\n Vous nettoyez votre organisme et faites le plein d’antioxydants, grâce à une alimentation appropriée.\n En effet, les produits Beautysané sont sans pesticides ni métaux lourds. Cette détox permet à votre organisme de fonctionner à nouveau de façon optimale !"
         } else if (body[25].rep === "Retrouver du tonus de l'énergie") {
-            BienEtreMotivations = "Avec Beautysané, faites le plein de nutriments essentiels (omega3, vitamines, minéraux…) pour retrouver la forme et gagner en vitalité ! L’apport optimal en protéines permet également de fournir à votre corps les neurotransmetteurs nécessaires au bon fonctionnement du système hormonal. Votre énergie est ainsi reboostée !"
+            BienEtreMotivations = "Avec Beautysané, faites le plein de nutriments essentiels \n (omega3, vitamines, minéraux…) pour retrouver la forme et gagner en vitalité ! L’apport optimal \n en protéines permet également de fournir à votre corps les neurotransmetteurs nécessaires au bon fonctionnement du système hormonal. Votre énergie est ainsi reboostée !"
         } else if (body[25].rep === "Mieux dormir") {
-            BienEtreMotivations = "Malgré vos journées intenses, vous n’arrivez pas à trouver le sommeil ? Et si votre difficulté d’endormissement était due à votre alimentation ? Pour une qualité de sommeil optimale, il faut manger assez (le jambon/salade ne suffisent pas !), tout en privilégiant des aliments de qualité, ni trop gras, ni trop sucrés. En suivant les programmes proposés par Beautysané, améliorez votre sommeil rapidement, en toute sérénité !"
+            BienEtreMotivations = "Malgré vos journées intenses, vous n’arrivez pas à trouver\n le sommeil ? Et si votre difficulté d’endormissement était due à votre alimentation ? Pour\n une qualité de sommeil optimale, il faut manger assez (le jambon/salade ne suffisent pas !), tout en privilégiant des aliments de qualité, ni trop gras, ni trop sucrés. En suivant les programmes proposés par Beautysané, améliorez votre sommeil rapidement, en toute sérénité !"
         }
 
         if (body[26].rep != "" || body[26].rep != null) {
-            pathologies = "Vous souffrez d’une pathologie ? Il est préférable de demander l’avis de votre médecin \ntraitant avant de commencer un programme."
+            pathologies = "Vous souffrez d’une pathologie ? Il est préférable de demander l’avis \n de votre médecin traitant avant de commencer un programme."
         }
 
         if (body[28].rep != "" || body[26].rep != null) {
@@ -813,7 +1079,7 @@ exports.sendNLMailWithUrl = async function (req, res) {
         }
 
         if (body[29].rep === "OUI") {
-            fummeur = "Vous êtes fumeur. L’arrêt du tabac est un point de départ vers une meilleure hygiène de vie \n: alimentation équilibrée, activité physique, temps pour soi,... Si vous craignez la prise de poids à l’arrêt du tabac, nous avons des solutions simples à vous proposer."
+            fummeur = "Vous êtes fumeur. L’arrêt du tabac est un point de départ vers une meilleure hygiène de vie \n: alimentation équilibrée, activité physique, temps pour soi,...\n Si vous craignez la prise de poids à l’arrêt du tabac, nous avons des solutions simples à vous proposer."
         }
 
         let bs = {
@@ -849,6 +1115,7 @@ exports.sendNLMailWithUrl = async function (req, res) {
             pathologies: pathologies,
             allergie: allergie,
             fummeur: fummeur,
+            motivations:motivations,
             depense_enegitique: depense_enegitique,
             horraire_decale: horraire_decale,
             probleme: probleme,
@@ -856,32 +1123,279 @@ exports.sendNLMailWithUrl = async function (req, res) {
             text: " Voici notre sélection de produits pour manger équilibré et rester en forme.",
             grignotez: grignotez,
             sautez_repas: sautez_repas
-        }, function (err, data) {
-            if (err) {
-                console.log(err);
-            } else {
-                var mainOptions = {
-                    from: '"NL BodyCheck " <noreply@smartco.fr>',
-                    to: email,
-                    subject: 'résultats de votre bodycheck, by Beautysané',
-                    html: data
+        },
+            function (err, dataa) {
+                if (err){
+                    console.log(err);
+                } else {
 
-                };
-                //console.log("html data ======================>", mainOptions.html);
+                    const pdf='./DOC/BODYCHECK_reponse_Minceur.pdf'
+                    fs.readFile('./api/controllers/DOC/BODYCHECK_reponse_Equilibre.pdf', async function (err, data) {
+                        if (err) {
+                            console.log(err)
+                        } else {
+                            const existingPdfBytes = data
 
-                transporter.sendMail(mainOptions, function (err, info) {
-                    if (err) {
-                        res.json({
-                            msg: 'fail'
-                        })
-                    } else {
-                        res.json({
-                            msg: 'success'
-                        })
-                    }
-                });
-            }
-        });
+                            const pdfDoc = await PDFDocument.load(existingPdfBytes)
+
+                            const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica)
+                            const pages = pdfDoc.getPages()
+                            const firstPage = pages[0]
+                            const secondPage = pages[1]
+                            const troixiemePage = pages[2]
+                            const quatriemePage = pages[3]
+
+
+
+                            const { width, height } = firstPage.getSize()
+
+                            firstPage.drawText(age.toString(), {
+                                x: 84,
+                                y: 840-697,
+                                size: 22,
+                                font: helveticaFont,
+                                color: rgb(204/255, 51/255, 153/255),
+                                rotate: degrees(0),
+                            })
+                            firstPage.drawText((taille*100).toString(), {
+                                x: 211,
+                                y: 840-697,
+                                size: 22,
+                                font: helveticaFont,
+                                color: rgb(204/255, 51/255, 153/255),
+                                rotate: degrees(0),
+                            })
+                            firstPage.drawText(poids.toString()+" KG", {
+                                x: 357,
+                                y: 840-697,
+                                size: 22,
+                                font: helveticaFont,
+                                color: rgb(204/255, 51/255, 153/255),
+                                rotate: degrees(0),
+                            })
+                            firstPage.drawText(dej.toFixed(2).toString(), {
+                                x: 500,
+                                y: 840-697,
+                                size: 22,
+                                font: helveticaFont,
+                                color: rgb(204/255, 51/255, 153/255),
+                                rotate: degrees(0),
+                            })
+
+                            secondPage.drawText(cuisine.toString(), {
+                                x: 35,
+                                y: 840-109,
+                                size: 12,
+                                font: helveticaFont,
+                                color: rgb(0, 0, 0),
+                                rotate: degrees(0),
+                            })
+                            secondPage.drawText(alimentation.toString(), {
+                                x: 35,
+                                y: 840-207,
+                                size: 12,
+                                font: helveticaFont,
+                                color: rgb(0, 0, 0),
+                                rotate: degrees(0),
+                            })
+
+                            secondPage.drawText((portionLegumes+portionFruits).toString()+" portions", {
+                                x: 55,
+                                y: 840-468,
+                                size: 12,
+                                font: helveticaFont,
+                                color: rgb(0, 0, 0),
+                                rotate: degrees(0),
+                            })
+                            secondPage.drawText((protionProteine).toString()+" portions", {
+                                x: 142,
+                                y: 840-468,
+                                size: 12,
+                                font: helveticaFont,
+                                color: rgb(0, 0, 0),
+                                rotate: degrees(0),
+                            })
+                            secondPage.drawText((portionProdLaitiers).toString()+" portions", {
+                                x: 228,
+                                y: 840-468,
+                                size: 12,
+                                font: helveticaFont,
+                                color: rgb(0, 0, 0),
+                                rotate: degrees(0),
+                            })
+                            secondPage.drawText((portionFeculents).toString()+" portions", {
+                                x: 319,
+                                y: 840-468,
+                                size: 12,
+                                font: helveticaFont,
+                                color: rgb(0, 0, 0),
+                                rotate: degrees(0),
+                            })
+
+                            secondPage.drawText((protionProdGras).toString()+" portions", {
+                                x: 406,
+                                y: 840-468,
+                                size: 12,
+                                font: helveticaFont,
+                                color: rgb(0, 0, 0),
+                                rotate: degrees(0),
+                            })
+                            secondPage.drawText((protionProdSucre).toString()+" portions", {
+                                x: 499,
+                                y: 840-468,
+                                size: 12,
+                                font: helveticaFont,
+                                color: rgb(0, 0, 0),
+                                rotate: degrees(0),
+                            })
+
+                            secondPage.drawText(legume.toString(), {
+                                x: 35,
+                                y: 840-511,
+                                size: 12,
+                                font: helveticaFont,
+                                color: rgb(0, 0, 0),
+                                rotate: degrees(0),
+                            })
+                            secondPage.drawText(viande.toString(), {
+                                x: 35,
+                                y: 840-537,
+                                size: 12,
+                                font: helveticaFont,
+                                color: rgb(0, 0, 0),
+                                rotate: degrees(0),
+                            })
+                            secondPage.drawText(feculent.toString(), {
+                                x: 35,
+                                y: 840-570,
+                                size: 12,
+                                font: helveticaFont,
+                                color: rgb(0, 0, 0),
+                                rotate: degrees(0),
+
+                            })
+                            secondPage.drawText(prodSucre.toString(), {
+                                x: 35,
+                                y: 840-600,
+                                size: 12,
+                                font: helveticaFont,
+                                color: rgb(0, 0, 0),
+                                rotate: degrees(0),
+
+                            })
+                            secondPage.drawText(prodGras.toString(), {
+                                x: 35,
+                                y: 840-630,
+                                size: 12,
+                                font: helveticaFont,
+                                color: rgb(0, 0, 0),
+                                rotate: degrees(0),
+
+                            })
+                            secondPage.drawText(grignotez.toString(), {
+                                x: 35,
+                                y: 840-755,
+                                size: 12,
+                                font: helveticaFont,
+                                color: rgb(0, 0, 0),
+                                rotate: degrees(0),
+
+                            })
+                            troixiemePage.drawText(sautez_repas.toString(), {
+                                x: 35,
+                                y: 840-73,
+                                size: 12,
+                                font: helveticaFont,
+                                color: rgb(0, 0, 0),
+                                rotate: degrees(0),
+
+                            })
+                            troixiemePage.drawText(depense_enegitique.toString(), {
+                                x: 35,
+                                y: 840-180,
+                                size: 12,
+                                font: helveticaFont,
+                                color: rgb(0, 0, 0),
+                                rotate: degrees(0),
+
+                            })
+                            troixiemePage.drawText(horraire_decale.toString(), {
+                                x: 35,
+                                y: 840-330,
+                                size: 12,
+                                font: helveticaFont,
+                                color: rgb(0, 0, 0),
+                                rotate: degrees(0),
+
+                            })
+                            troixiemePage.drawText( probleme.toString(), {
+                                x: 35,
+                                y: 840-426,
+                                size: 12,
+                                font: helveticaFont,
+                                color: rgb(0, 0, 0),
+                                rotate: degrees(0),
+
+                            })
+                            quatriemePage.drawText(BienEtreMotivations.toString(), {
+                                x: 35,
+                                y: 840-180,
+                                size: 12,
+                                font: helveticaFont,
+                                color: rgb(0, 0, 0),
+                                rotate: degrees(0),
+
+                            })
+
+                            quatriemePage.drawText(fummeur.toString(), {
+                                x: 35,
+                                y: 840-600,
+                                size: 12,
+                                font: helveticaFont,
+                                color: rgb(0, 0, 0),
+                                rotate: degrees(0),
+
+                            })
+
+
+
+                            const pdfBytes = await pdfDoc.save()
+                            var mainOptions = {
+                                from: '"NL BodyCheck " <noreply@smartco.fr>',
+                                to: 'jawher.zairi@sesame.com.tn',
+                                subject: 'résultats de votre bodycheck, by Beautysané',
+                                html: dataa,
+
+                                attachments: [{   // stream as an attachment
+                                    filename: 'BodyCheckPDF.pdf',
+                                    contentType: 'application/pdf',
+                                    content: pdfBytes,
+
+                                }]
+
+
+                            };
+                            //console.log("html data ======================>", mainOptions.html);
+
+                            transporter.sendMail(mainOptions, function (err, info) {
+                                if (err) {
+                                    res.json({
+                                        msg: err
+                                    })
+                                } else {
+                                    res.json({
+                                        msg: 'success'
+                                    })
+                                }
+                            });
+
+
+                        }
+                    });
+
+
+                }
+            });
     }
 
     if (body[26].rep != "" || body[26].rep != null) {
@@ -893,7 +1407,7 @@ exports.sendNLMailWithUrl = async function (req, res) {
     }
 
     if (body[29].rep === "OUI") {
-        fummeur = "Vous êtes fumeur. L’arrêt du tabac est un point de départ vers une meilleure hygiène de vie : alimentation équilibrée, activité physique, temps pour soi,... Si vous craignez la prise de poids à l’arrêt du tabac, nous avons des solutions simples à vous proposer."
+        fummeur = "Vous êtes fumeur. L’arrêt du tabac est un point de départ vers une meilleure hygiène de vie \n: alimentation équilibrée, activité physique, temps pour soi,... Si vous craignez la prise de poids à l’arrêt du tabac, nous avons des solutions simples à vous proposer."
     }
 
 
@@ -1249,6 +1763,59 @@ exports.getQuestionData= function (req,res) {
 
 
   })
+
+}
+
+exports.getQuestionDatabyEmail= function (req,res) {
+    let data ={
+        data:{}
+    }
+
+    Questions.findByEmail(req.params.id,function (err,question) {
+        if (err){
+            res.send(err);
+        }else {
+
+            if (question.length!=0) {
+
+                data.data.question = question[question.length-1]
+
+                if (question[question.length-1].objectif === "Minceur") {
+                    Miniceur.findById(question[question.length-1].id_q, function (err2, minceur) {
+                        if (err) {
+                            res.send(err);
+                        } else {
+                            data.data.objectif = minceur[minceur.length-1]
+                            res.json(data);
+                        }
+                    })
+                } else if (question[question.length-1].objectif === "Sport") {
+                    Sport.findById(question[question.length-1].id_q, function (err2, sport) {
+                        if (err) {
+                            res.send(err);
+                        } else {
+                            data.data.objectif = sport[sport.length-1]
+                            res.json(data);
+                        }
+                    })
+                } else if (question[question.length-1].objectif === "Bien-être") {
+                    BienEtre.findById(question[question.length-1].id_q, function (err2, bienetre) {
+                        if (err) {
+                            res.send(err);
+                        } else {
+                            data.data.objectif = bienetre[bienetre.length-1]
+                            res.json(data);
+                        }
+                    })
+                }
+            }else {
+                data.data=""
+                res.json(data)
+            }
+        }
+
+
+    })
 
 }
 async function generateContratpdf(req, res,sUid,index) {

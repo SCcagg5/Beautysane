@@ -1,0 +1,16 @@
+.btn-equilibre {
+    border-color: #db72c2;
+    color: black;
+
+}
+.btn.btn-equilibre:hover{
+    background-color: #db72c2;
+}
+.btn.btn-equilibre.activee{
+    background-color:#db72c2 ;
+    color: black;
+}
+.btn.btn-equilibre.inactive {
+
+    color: black;
+}

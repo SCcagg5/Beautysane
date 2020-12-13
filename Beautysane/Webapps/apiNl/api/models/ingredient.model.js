@@ -7,6 +7,8 @@ var ingr = function(recette){
     this.id_rec = recette.id_rec;
     this.id_ingr=recette.id_ingr
     this.image_url=recette.image_url
+    this.woo_prod=recette.woo_prod
+
 
 
 

@@ -1,0 +1,18 @@
+.btn-sport {
+    border-color: #3aa1db;
+    color: black;
+
+}
+
+.btn.btn-sport:hover{
+    background-color: #3aa1db;
+}
+.btn.btn-sport.activee{
+    background-color:#3aa1db  ;
+    color: white;
+}
+.btn.btn-sport.inactive {
+    border-color: #3aa1db;
+    background-color:white;
+    color: black;
+}

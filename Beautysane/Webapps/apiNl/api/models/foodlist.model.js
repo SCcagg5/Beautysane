@@ -8,6 +8,8 @@ var foodlist = function(recette){
     this.alim_code=recette.alim_code;
     this.alim_nom_fr=recette.alim_nom_fr
     this.image_url=recette.image_url
+    this.woo_prod=recette.woo_prod
+
 
 
 

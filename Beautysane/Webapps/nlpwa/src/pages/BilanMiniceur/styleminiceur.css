@@ -1,0 +1,16 @@
+.btn-minceur {
+    border-color: #fffad8;
+    color: black;
+
+}
+.btn.btn-minceur:hover{
+    background-color: #fffad8 ;
+}
+.btn.btn-minceur.activee{
+    background-color:#fffad8 ;
+    color: black;
+}
+.btn.btn-minceur.active {
+    background-color:#fffad8 ;
+    color: black;
+}

@@ -23,6 +23,7 @@ var Questions = function(questions){
     this.travaill_horraire_decale= questions.travaill_horraire_decale;
     this.probleme_de= questions.probleme_de;
     this.objectif = questions.objectif;
+    this.email = questions.email;
 
 
 
@@ -46,6 +47,17 @@ Questions.create = function (newEmp, result) {
 };
 Questions.findById = function (id, result) {
     dbConn.query("Select * from questions where id_user = ? ", id, function (err, res) {
+        if(err) {
+            console.log("error: ", err);
+            result(err, null);
+        }
+        else{
+            result(null, res);
+        }
+    });
+};
+Questions.findByEmail = function (id, result) {
+    dbConn.query("Select * from questions where email = ? ", id, function (err, res) {
         if(err) {
             console.log("error: ", err);
             result(err, null);

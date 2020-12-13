@@ -54,6 +54,7 @@ module.exports = function (app) {
         .get(api.foodList)
 
 
-
+    app.route('/api/userdata/:id')
+        .get(api.getQuestionDatabyEmail)
 
 };
